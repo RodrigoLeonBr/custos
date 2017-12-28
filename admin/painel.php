@@ -49,7 +49,7 @@ endif;
                 </ul>
 
                 <nav>
-                    <h1><a href="painel.php" title="Dasboard">Dasboard</a></h1>
+                    <h1><a href="painel.php" title="Dasboard">Principal</a></h1>
 
                     <?php
                     //ATIVA MENU
@@ -61,6 +61,14 @@ endif;
                     ?>
 
                     <ul class="nav">
+
+                        <li class="li<?php if (in_array('lanccustos', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Custos</a>
+                            <ul class="sub">
+                                <li><a href="painel.php?exe=lanccustos/create">Lançar Custos</a></li>
+                                <li><a href="painel.php?exe=lanccustos/index">Listar / Editar Lançamentos</a></li>
+                            </ul>
+                        </li>                        
+
                         <li class="li<?php if (in_array('posts', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Posts</a>
                             <ul class="sub">
                                 <li><a href="painel.php?exe=posts/create">Criar Post</a></li>
@@ -95,7 +103,7 @@ endif;
                                 <li><a href="painel.php?exe=estruturas/index">Listar / Editar Estruturas</a></li>
                             </ul>
                         </li>                        
-
+                        
                         <li class="li"><a href="../" target="_blank" class="opensub">Ver Site</a></li>
                     </ul>
                 </nav>

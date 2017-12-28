@@ -16,7 +16,7 @@ define('SITENAME', 'Planejamento - Secretaria de Saúde - Americana');
 define('SITEDESC', 'Este site foi desenvolvido pela Secretaria de Saúde de Americana para ajudar no planejamento das ações em saúde.');
 
 // DEFINE A BASE DO SITE ####################
-define('HOME', 'http://localhost/planejamento');
+define('HOME', 'http://localhost/custos');
 define('THEME', 'cidadeonline');
 
 define('INCLUDE_PATH', HOME . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . THEME);
