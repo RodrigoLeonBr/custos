@@ -6,7 +6,7 @@ define('PASS', '');
 define('DBSA', 'sisplan');
 
 // DEFINE SERVIDOR DE E-MAIL ################
-define('MAILUSER', 'email@dominio.com.br');
+define('MAILUSER', 'informacao@saudeamericana.com.br');
 define('MAILPASS', 'senhadoemail');
 define('MAILPORT', 'postadeenvio');
 define('MAILHOST', 'servidordeenvio');

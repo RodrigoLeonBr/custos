@@ -91,7 +91,7 @@ class Login {
         $this->Senha = md5($this->Senha);
 
         $read = new Read;
-        $read->ExeRead("ws_users", "WHERE user_email = :e AND user_password = :p", "e={$this->Email}&p={$this->Senha}");
+        $read->ExeRead("cc_users", "WHERE user_email = :e AND user_password = :p", "e={$this->Email}&p={$this->Senha}");
 
         if ($read->getResult()):
             $this->Result = $read->getResult()[0];

@@ -50,7 +50,7 @@ body.painel{background: url(../images/header_bg.png) repeat-x #fbfbfb;}
 /*PAINEL ADMIN*/
 #navadmin{width: 100%; height: 147px; position: relative; margin-bottom: 50px;} 
 #navadmin .content{width: 968px; display: block; margin: 0 auto;}
-#navadmin .logomarca{float: left; font-size: 0; width: 200px; height: 60px; margin-top: 20px; background: url(../images/header_logo.png) left center no-repeat;}
+#navadmin .logomarca{float: left; font-size: 0; width: 240px; height: 60px; margin-top: 20px; background: url(../images/header_logo.png) left center no-repeat;}
 
 /*NAV SYSTEM*/
 #navadmin .systema_nav{float: right; padding: 20px 5px 10px; background: #006699; position: relative; top: -10px}
@@ -76,6 +76,7 @@ body.painel{background: url(../images/header_bg.png) repeat-x #fbfbfb;}
 #navadmin nav ul .li .opensub:hover{background: #F2F2F2;}
 #navadmin nav ul li:hover .sub{display: block;}
 #navadmin nav ul .li .sub{position: absolute; top: 33px; width: 960px;}
+
 #navadmin nav ul .li .sub li{float: left; font-size: 12px; text-transform: uppercase; margin-right: 20px;}
 #navadmin nav ul .li .sub li a{float: left; font-weight: bold; color: #999; padding: 17px 10px;}
 #navadmin nav ul .li .sub li a:hover{color: #333;}

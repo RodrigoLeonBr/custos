@@ -66,29 +66,15 @@ endif;
                             <ul class="sub">
                                 <li><a href="painel.php?exe=lanccustos/create">Lançar Custos</a></li>
                                 <li><a href="painel.php?exe=lanccustos/index">Listar / Editar Lançamentos</a></li>
+                                <li><a href="painel.php?exe=lanccustos/relatorio&ano=2017&mes=1">Relatorio por Centro de Custo</a></li>
                             </ul>
                         </li>                        
 
-                        <li class="li<?php if (in_array('posts', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Posts</a>
+                        <li class="li<?php if (in_array('lanccustos', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Relatorios</a>
                             <ul class="sub">
-                                <li><a href="painel.php?exe=posts/create">Criar Post</a></li>
-                                <li><a href="painel.php?exe=posts/index">Listar / Editar Posts</a></li>
+                                <li><a href="painel.php?exe=lanccustos/relatorio&ano=2017&mes=7">Relatorio por Centro de Custo</a></li>
                             </ul>
-                        </li>
-
-                        <li class="li<?php if (in_array('categories', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Categorias</a>
-                            <ul class="sub">
-                                <li><a href="painel.php?exe=categories/create">Criar Categoria</a></li>
-                                <li><a href="painel.php?exe=categories/index">Listar / Editar Categorias</a></li>
-                            </ul>
-                        </li> 
-
-                        <li class="li<?php if (in_array('empresas', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Empresas</a>
-                            <ul class="sub">
-                                <li><a href="painel.php?exe=empresas/create">Cadastrar Empresa</a></li>
-                                <li><a href="painel.php?exe=empresas/index">Listar / Editar Empresas</a></li>
-                            </ul>
-                        </li>
+                        </li>                        
 
                         <li class="li<?php if (in_array('prestadores', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Prestadores</a>
                             <ul class="sub">
@@ -103,8 +89,7 @@ endif;
                                 <li><a href="painel.php?exe=estruturas/index">Listar / Editar Estruturas</a></li>
                             </ul>
                         </li>                        
-                        
-                        <li class="li"><a href="../" target="_blank" class="opensub">Ver Site</a></li>
+
                     </ul>
                 </nav>
 
@@ -132,7 +117,7 @@ endif;
         </div> <!-- painel -->
 
         <footer class="main_footer">
-            <a href="http://www.upinside.com.br/campus" target="_blank" title="Campus UpInside">&copy; Campus UpInside - Todos os Direitos Reservados</a>
+            <a href="http://www.saudeamericana.com.br/campus" target="_blank" title="Secretaria de Saúde">&copy; Secretaria de Saúde de Americana - Todos os Direitos Reservados</a>
         </footer>
 
     </body>

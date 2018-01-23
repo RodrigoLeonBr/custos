@@ -1,7 +1,7 @@
 <div class="content home">
 
     <aside>
-        <h1 class="boxtitle">Estatísticas de Acesso:</h1>
+        <h1 class="boxtitle">Estatísticas da Secretaria:</h1>
 
         <article class="sitecontent boxaside">
             <h1 class="boxsubtitle">Conteúdo:</h1>
@@ -80,7 +80,7 @@
 
     <section class="content_statistics">
 
-        <h1 class="boxtitle">Publicações:</h1>
+        <h1 class="boxtitle">Informações:</h1>
 
         <section>
             <h1 class="boxsubtitle">Artigos Recentes:</h1>
