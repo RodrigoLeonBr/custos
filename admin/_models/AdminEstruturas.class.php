@@ -14,7 +14,7 @@ class AdminEstrutura {
     private $Result;
 
     //Nome da tabela no banco de dados!
-    const Entity = 'estruturas';
+    const Entity = 'c_estruturas';
 
     /**
      * <b>Cadastrar Estrutura:</b> Envelope titulo, descrição, data e sessão em um array atribuitivo e execute esse método

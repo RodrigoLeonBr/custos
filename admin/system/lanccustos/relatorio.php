@@ -1,81 +1,106 @@
 <div class="content list_content">
 
-    <section class="rel_custo">
+    <section class="form_pesquisao">
+        <header>
+            <h1>Filtro de Relatório por Centro de Custo:</h1>
+        </header>
+        
+        <?php
+        
+        $search = "";        
+        $SAno = filter_input(INPUT_POST, 'ano', FILTER_DEFAULT);
+        if (!empty($SAno)):
+            $SAno = strip_tags(trim(urlencode($SAno)));
+            $search.="&ano=" . $SAno;
+        endif;        
+        $Smes = filter_input(INPUT_POST, 'mes', FILTER_DEFAULT);
+        if (!empty($Smes)):
+            $Smes = strip_tags(trim(urlencode($Smes)));
+            $search.="&mes=" . $Smes;
+        endif;
+        $SCC = filter_input(INPUT_POST, 'cc', FILTER_DEFAULT);
+        if (!empty($SCC)):
+            $SCC = strip_tags(trim(urlencode($SCC)));
+            $search.="&cc=" . $SCC;
+        endif;
+        if (!empty($SAno) || !empty($Smes)):
+            header('Location: painel.php?exe=lanccustos/relatorio' . $search);
+        endif;
+        ?>
+
+        <form name="search" action="" method="post" enctype="multipart/form-data">
+            <label class="label_small">
+                <span class="field">Ano:</span>
+                <select name="ano" >                    
+                    <?php
+                    $readAno = new Read;
+                    $readAno->FullRead("SELECT DISTINCT Ano from c_movcusto");
+                    foreach ($readAno->getResult() as $ano):
+                        echo "<option value=\"{$ano['Ano']}\" ";
+                        if (isset($data['ano']) && $data['ano'] == $ano['Ano']): echo 'selected';
+                        endif;
+                        echo "> {$ano['Ano']} </option>";
+                    endforeach;
+                    ?>                        
+                </select>
+                
+                <select name="mes" >
+                    <?php
+                    $readMes = new Read;
+                    $readMes->FullRead("SELECT DISTINCT Mes from c_movcusto");
+                    foreach ($readMes->getResult() as $pmes):
+                        echo "<option value=\"{$pmes['Mes']}\" ";
+                        if ($Smes == $pmes['Mes']): echo 'selected';
+                        endif;
+                        echo "> {$pmes['Mes']} </option>";
+                    endforeach;
+                    ?>                        
+                </select>
+                
+                <select name="cc" >
+                    <option value="" selected> Selecione Setor </option>
+                    <?php
+                    $readCC = new Read;
+                    $readCC->FullRead("SELECT DISTINCT idCentroCusto, DescCentroCusto from c_tabcentrocusto order by idCentroCusto");
+                    foreach ($readCC->getResult() as $pcc):
+                        echo "<option value=\"{$pcc['idCentroCusto']}\" ";                        
+                        echo "> {$pcc['DescCentroCusto']} </option>";
+                    endforeach;
+                    ?>                        
+                </select>
+            </label>         
+            <input type="submit" class="btn blue" name="sendsearch" value="Pesq"/>            
+        </form>
 
         <?php
-        $empty = filter_input(INPUT_GET, 'empty', FILTER_VALIDATE_BOOLEAN);
-        if ($empty):
-            WSErro("Oppsss: Você tentou exibir um período que não possui lançamentos!", WS_INFOR);
-        endif;
-
         $action = filter_input(INPUT_GET, 'action', FILTER_DEFAULT);
-        if ($action):
-            require ('_models/AdminLancCusto.class.php');
-
-            $relcusAction = filter_input(INPUT_GET, 'custo', FILTER_VALIDATE_INT);
-            $relcusAction = new AdminLancCusto();
-            
-            /*
-             * 
-            switch ($action):
-                case 'itemcc':
-                   $relTipo=$action;
-                   break;
-                default :
-                    WSErro("Ação não foi identifica pelo sistema, favor utilize os botões!", WS_ALERT);
-            endswitch;
-             * 
-             */
+        require ('_models/AdminLancCusto.class.php');
+        $relcusAction = new AdminLancCusto();
+        
+        
+        $SAno = filter_input(INPUT_GET, 'ano', FILTER_DEFAULT);
+        if (!empty($SAno)):
+            $SAno = strip_tags(trim(urlencode($SAno)));
+            $search.="&ano=" . $SAno;            
         endif;
-        $SAno = filter_input(INPUT_GET, 'ano', FILTER_VALIDATE_INT);
-        if(is_int($SAno)==FALSE):
-            WSErro("Oppsss: Ano incorreto, utilize o formulário", WS_INFOR);
-            header('Location: painel.php?exe=lanccustos/relatorio');
+        $Smes = filter_input(INPUT_GET, 'mes', FILTER_DEFAULT);
+        if (!empty($Smes)):
+            $Smes = strip_tags(trim(urlencode($Smes)));
+            $search.="&mes=" . $Smes;            
         endif;
-        $Smes = filter_input(INPUT_GET, 'mes', FILTER_VALIDATE_INT);
-        if(is_int($Smes)==FALSE):
-            WSErro("Oppsss: Mês incorreto, utilize o formulário", WS_INFOR);
-            header('Location: painel.php?exe=lanccustos/relatorio');
+        
+        $SCC = filter_input(INPUT_GET, 'cc', FILTER_DEFAULT);
+        if (!empty($SCC)):
+            $SCC = strip_tags(trim(urlencode($SCC)));
+            $search.="&cc=" . $SCC;
         endif;
-            
+        
+        if(!empty($SAno) && !empty($Smes)):
             $readCustoTotal = new Read;
             $readCustoDireto = new Read;
             $readCusto = new Read;
- 
-            $sqlMes = "SELECT sum(case when mes=".$Smes." then c_movcusto.Valor else 0 end) Mes1, ";
-            $sqlMes .="sum(case when mes=".($Smes+1)." then c_movcusto.Valor else 0 end) Mes2, ";
-            $sqlMes .="sum(case when mes=".($Smes+2)." then c_movcusto.Valor else 0 end) Mes3, ";
-            $sqlMes .= "sum(case when mes=".($Smes+3)." then c_movcusto.Valor else 0 end) Mes4 ";
-            $sqlCustos = $sqlMes.", ";
-            $sqlCustos .= "c_movcusto.id_CentroCusto, ";
-            $sqlCustos .= "c_tabcentrocusto.DescCentroCusto, ";
-            $sqlCustos .= "c_tabitemcc.id_GrupoItemCC, ";
-            $sqlCustos .= "c_tabgrupoitemcc.DescGrupoItemCC, ";
-            $sqlCustos .= "c_movcusto.id_ItemCC, ";
-            $sqlCustos .= "c_tabitemcc.DescItemCC ";
-
-
-            $sqlCustos .= "FROM c_movcusto ";
-            $sqlCustos .= "INNER JOIN c_tabcentrocusto ON c_tabcentrocusto.idCentroCusto=c_movcusto.id_CentroCusto ";
-            $sqlCustos .= "INNER JOIN c_tabitemcc ON c_tabitemcc.idItemCC=c_movcusto.id_ItemCC ";
-            $sqlCustos .= "INNER JOIN c_tabgrupoitemcc ON c_tabgrupoitemcc.idGrupoItemCC=c_tabitemcc.id_GrupoItemCC ";
-            $sqlCustos .= " WHERE Ano= ". strval($SAno);
-            $sqlCustos .= " and mes >= ". strval($Smes);
-            $sqlCustos .= " and mes<= ". strval($Smes+3);
-
-            $sqlCustos .= " GROUP BY c_movcusto.id_CentroCusto, ";
-            $sqlCustos .= "c_tabcentrocusto.DescCentroCusto, ";
-            $sqlCustos .= "c_tabitemcc.id_GrupoItemCC, ";
-            $sqlCustos .= "c_tabgrupoitemcc.DescGrupoItemCC, ";
-            $sqlCustos .= "c_movcusto.id_ItemCC, ";
-            $sqlCustos .= "c_tabitemcc.DescItemCC ";
-
-
-            $sqlCustos .= "ORDER BY  c_movcusto.id_CentroCusto, ";
-            $sqlCustos .= "c_tabitemcc.id_GrupoItemCC, ";
-            $sqlCustos .= "c_movcusto.id_ItemCC ";	
-            
-            $readCusto->FullRead($sqlCustos);
+          
+            $readCusto->FullRead($relcusAction->ExeBuscaCusto("Tudo",$SAno, $Smes, NULL , NULL , $SCC));
 
             if ($readCusto->getResult()):
                 /** CABEÇALHO*/
@@ -84,19 +109,13 @@
 
             <div class='container'>
                 <tbody>
-                <div class="row text-center">
-                    <div class="col-md-8">
-                        <img src="brasao.png" width="50%">
-                        <p style="line-height: 22px; font-size: 170%"><strong>Secretaria Municipal de Saúde - Americana/SP</strong></p>
-                        <p style="line-height: 22px; font-size: 150%"><strong>Prefeitura Municipal de Americana</strong></p>
-                        <p style="line-height: 22px; font-size: 150%"><strong>Estado de São Paulo</strong></p>
-                        <p style="line-height: 22px; font-size: 150%"><strong>Unidade de Planejamento</strong></p>
-                        <p style="line-height: 22px; font-size: 130%"><strong>Custos da Secretaria de Saúde - Custo por Setor</strong></p> 
-                    </div>
-
-                </div>
-
-            <table class="table table-condensed table-hover">
+                <table class="table table-condensed table-hover">                
+                <tr><th colspan=9 style="line-height: 22px; font-size: 170%"><strong>Secretaria Municipal de Saúde - Americana/SP</strong></th></tr>
+                <tr><th colspan=9 style="line-height: 22px; font-size: 150%"><strong>Prefeitura Municipal de Americana</strong></th></tr>
+                <tr><th colspan=9 style="line-height: 22px; font-size: 150%"><strong>Estado de São Paulo</strong></th></tr>
+                <tr><th colspan=9 style="line-height: 22px; font-size: 150%"><strong>Unidade de Planejamento</strong></th></tr>
+                <tr><th colspan=9 style="line-height: 22px; font-size: 130%"><strong>Custos da Secretaria de Saúde - Custo por Setor</strong></th></tr>
+                <tr><th>&nbsp;</th></tr>
 
                 <?php
                 $CentrodeCusto=0;
@@ -229,11 +248,11 @@
                               echo "<td align=right><b>".number_format($Rdir[0]["Mes4"],2, ',','.')."</b></td>";
                               echo "<td align=right></td>";
                           echo "</tr>";
-                          echo "<tr><td>&nbsp;</td></tr>";
+                          echo "<tr><td colspan=9 style='border-top: 1px solid black;'>&nbsp;</td></tr>";
 
                         }
                         echo "<tr>";
-                            echo "<td colspan=3><strong>Centro de Custo: ". $rel["id_CentroCusto"]." - ".$rel["DescCentroCusto"] ."</strong></td>";
+                            echo "<td colspan=9 style='border-bottom: 1px solid black;'><strong>CENTRO DE CUSTO: ". $rel["id_CentroCusto"]." - ".$rel["DescCentroCusto"] ."</strong></td>";
                         echo "</tr>";
 
                         echo "<tr>";
@@ -249,40 +268,23 @@
                         echo "</tr>";
 
                         echo "<tr>";
-                            echo "<td><b>CUSTOS DIRETOS </b></td>";
-                            echo "<td align=right><b>Valor</b></td>";
-                            echo "<td align=right><b>%</b></td>";
-                            echo "<td align=right><b>Valor</b></td>";
-                            echo "<td align=right><b>%</b></td>";
-                            echo "<td align=right><b>Valor</b></td>";
-                            echo "<td align=right><b>%</b></td>";
-                            echo "<td align=right><b>Valor</b></td>";
-                            echo "<td align=right><b>%</b></td>";
+                            echo "<td style='width: 30%'><b>CUSTOS DIRETOS </b></td>";
+                            echo "<td style='width: 12%' align=right><b>Valor</b></td>";
+                            echo "<td style='width: 5%' align=right><b>%</b></td>";
+                            echo "<td style='width: 12%' align=right><b>Valor</b></td>";
+                            echo "<td style='width: 5%' align=right><b>%</b></td>";
+                            echo "<td style='width: 12%' align=right><b>Valor</b></td>";
+                            echo "<td style='width: 5%' align=right><b>%</b></td>";
+                            echo "<td style='width: 12%' align=right><b>Valor</b></td>";
+                            echo "<td style='width: 5%' align=right><b>%</b></td>";
                         echo "</tr>";
                         echo "<tr><td>&nbsp;</td></tr>";
 
-                        $SCustoTotal = $sqlMes;                        
-                        $SCustoTotal .="FROM c_movcusto ";
-                        $SCustoTotal .= "INNER JOIN c_tabitemcc ON c_tabitemcc.idItemCC=c_movcusto.id_ItemCC ";
-                        $SCustoTotal .="WHERE Ano= ". strval($SAno);
-                        $SCustoTotal .=" and mes >= ". strval($Smes);
-                        $SCustoTotal .=" and mes<= ". strval($Smes+3);
-                        $SCustoTotal .=" and id_CentroCusto=".strval($rel["id_CentroCusto"]);
-                        $SCustoTotal .=" and id_GrupoItemCC=".strval($rel["id_GrupoItemCC"]);
-
-                        $readCustoTotal->FullRead($SCustoTotal);
+                        $readCustoTotal->FullRead($relcusAction->ExeBuscaCusto("TotalGrupo",$SAno, $Smes, $rel["id_GrupoItemCC"], $rel["id_CentroCusto"], $SCC));
                         $Rtot = $readCustoTotal->getResult();
-
-                        $SCustoDireto = $sqlMes;                        
-                        $SCustoDireto .="FROM c_movcusto ";
-                        $SCustoDireto .="WHERE Ano= ". strval($SAno);
-                        $SCustoDireto .=" and mes >= ". strval($Smes);
-                        $SCustoDireto .=" and mes<= ". strval($Smes+3);
-                        $SCustoDireto .=" and id_CentroCusto=".strval($rel["id_CentroCusto"]);
-
-                        $readCustoDireto->FullRead($SCustoDireto);
+                        
+                        $readCustoDireto->FullRead($relcusAction->ExeBuscaCusto("TotalCentroCusto",$SAno, $Smes, $rel["id_GrupoItemCC"], $rel["id_CentroCusto"], $SCC));
                         $Rdir = $readCustoDireto->getResult();
-
                         $CentrodeCusto = $rel["id_CentroCusto"];                    
                       }
 
@@ -322,16 +324,7 @@
                           echo "<td><b>".$rel["DescGrupoItemCC"]."</b></td>";
                           echo "</tr>";
 
-                          $SCustoTotal = $sqlMes;
-                          $SCustoTotal .="FROM c_movcusto ";
-                          $SCustoTotal .= "INNER JOIN c_tabitemcc ON c_tabitemcc.idItemCC=c_movcusto.id_ItemCC ";
-                          $SCustoTotal .="WHERE Ano= ". strval($SAno);
-                          $SCustoTotal .=" and mes >= ". strval($Smes);
-                          $SCustoTotal .=" and mes<= ". strval($Smes+3);
-                          $SCustoTotal .=" and id_CentroCusto=".strval($rel["id_CentroCusto"]);
-                          $SCustoTotal .=" and id_GrupoItemCC=".strval($rel["id_GrupoItemCC"]);
-
-                          $readCustoTotal->FullRead($SCustoTotal);
+                          $readCustoTotal->FullRead($relcusAction->ExeBuscaCusto("TotalGrupo",$SAno, $Smes, $rel["id_GrupoItemCC"], $rel["id_CentroCusto"], $SCC));
                           $Rtot = $readCustoTotal->getResult();
 
                           $GrupoItemCusto=$rel["id_GrupoItemCC"];
@@ -370,9 +363,53 @@
                       $CentrodeCusto = $rel["id_CentroCusto"];
                       $GrupoItemCusto = $rel["id_GrupoItemCC"];
 
-                  endforeach;                       
-              endif;           
-          ?>
+                  endforeach;
+                  /*
+                   * Total e Total Custo Direto Final
+                   */
+                  echo "<tr>";
+                     echo "<td align=left><b>TOTAL: </b></td>";
+                     echo "<td align=right><b>".number_format($Rtot[0]["Mes1"],2, ',','.')."</b></td>";
+                     if($Rtot[0]["Mes1"]>0 && $Rdir[0]["Mes1"]>0){
+                       echo "<td align=right><b> ".number_format(($Rtot[0]["Mes1"]/$Rdir[0]["Mes1"]*100),2, ',','.')."</b></td>";
+                     }else{
+                       echo "<td align=right> ".number_format(0,2, ',','.')."</td>";
+                     }
+                     echo "<td align=right><b>".number_format($Rtot[0]["Mes2"],2, ',','.')."</b></td>";
+                     if($Rtot[0]["Mes2"]>0 & $Rdir[0]["Mes2"]>0){
+                       echo "<td align=right><b> ".number_format(($Rtot[0]["Mes2"]/$Rdir[0]["Mes2"]*100),2, ',','.')."</b></td>";
+                     }else{
+                       echo "<td align=right> ".number_format(0,2, ',','.')."</td>";
+                     }
+                     echo "<td align=right><b>".number_format($Rtot[0]["Mes3"],2, ',','.')."</b></td>";
+                     if($Rtot[0]["Mes3"]>0 & $Rdir[0]["Mes3"]>0){
+                       echo "<td align=right><b> ".number_format(($Rtot[0]["Mes3"]/$Rdir[0]["Mes3"]*100),2, ',','.')."</b></td>";
+                     }else{
+                       echo "<td align=right> ".number_format(0,2, ',','.')."</td>";
+                     }
+                     echo "<td align=right><b>".number_format($Rtot[0]["Mes4"],2, ',','.')."</b></td>";
+                     if($Rtot[0]["Mes4"]>0 & $Rdir[0]["Mes4"]>0){
+                       echo "<td align=right><b> ".number_format(($Rtot[0]["Mes4"]/$Rdir[0]["Mes4"]*100),2, ',','.')."</b></td>";
+                     }else{
+                       echo "<td align=right> ".number_format(0,2, ',','.')."</td>";
+                     }
+                 echo "</tr>";
+                 echo "<tr>";
+                     echo "<td align=left><b>TOTAL CUSTOS DIRETOS: </b></td>";                          
+                     echo "<td align=right><b>".number_format($Rdir[0]["Mes1"],2, ',','.')."</b></td>";
+                     echo "<td align=right></td>";
+                     echo "<td align=right><b>".number_format($Rdir[0]["Mes2"],2, ',','.')."</b></td>";
+                     echo "<td align=right></td>";
+                     echo "<td align=right><b>".number_format($Rdir[0]["Mes3"],2, ',','.')."</b></td>";
+                     echo "<td align=right></td>";
+                     echo "<td align=right><b>".number_format($Rdir[0]["Mes4"],2, ',','.')."</b></td>";
+                     echo "<td align=right></td>";
+                 echo "</tr>";
+                 
+
+              endif;
+        endif;
+    ?>
 
         </div>        
         <div class="clear"></div>

@@ -35,6 +35,81 @@ class AdminLancCusto {
     }
 
     /**
+     * <b>Realiza busca de Centro de Custo:</b> Envelope os dados do lançamento em um array atribuitivo e execute esse método
+     * para cadastrar a mesma no banco.
+     * @param STRING $Tipo = Tudo, TotalGrupo ou TotalCentroCusto
+     * @param INTEGER $Ano = Ano do Centro de Custo
+     * @param INTEGER $Mes = Primeiro mes do Quadrimestre a ser visualizado
+     * @param INTEGER $GICC = Grupo do Centro de Custo pode ser nulo
+     * @param INTEGER $CC = Centro de Custo por Grupo pode ser nulo
+     * @param INTEGER $SCC = Filtro do Relatório com único Centro de Custo pode ser nulo
+     */
+    public function ExeBuscaCusto($Tipo, $Ano, $Mes, $GICC = null, $Cc = null, $SCC = null) {
+        
+        $sqlCustos = "SELECT sum(case when mes=".$Mes." then c_movcusto.Valor else 0 end) Mes1, ";
+        $sqlCustos .="sum(case when mes=".($Mes+1)." then c_movcusto.Valor else 0 end) Mes2, ";
+        $sqlCustos .="sum(case when mes=".($Mes+2)." then c_movcusto.Valor else 0 end) Mes3, ";
+        $sqlCustos .="sum(case when mes=".($Mes+3)." then c_movcusto.Valor else 0 end) Mes4 ";        
+        if($Tipo=="Tudo"){            
+            $sqlCustos .= ", c_movcusto.id_CentroCusto, ";
+            $sqlCustos .= "c_tabcentrocusto.DescCentroCusto, ";
+            $sqlCustos .= "c_tabitemcc.id_GrupoItemCC, ";
+            $sqlCustos .= "c_tabgrupoitemcc.DescGrupoItemCC, ";
+            $sqlCustos .= "c_movcusto.id_ItemCC, ";
+            $sqlCustos .= "c_tabitemcc.DescItemCC ";
+        }
+        $sqlCustos .= "FROM c_movcusto ";
+        if($Tipo=="Tudo" || $Tipo=="TotalGrupo"){
+            $sqlCustos .= " INNER JOIN c_tabitemcc ON c_tabitemcc.idItemCC=c_movcusto.id_ItemCC ";
+        }            
+        if($Tipo=="Tudo"){
+            $sqlCustos .= " INNER JOIN c_tabcentrocusto ON c_tabcentrocusto.idCentroCusto=c_movcusto.id_CentroCusto ";
+            $sqlCustos .= " INNER JOIN c_tabgrupoitemcc ON c_tabgrupoitemcc.idGrupoItemCC=c_tabitemcc.id_GrupoItemCC ";
+        }        
+        $sqlCustos .= " WHERE Ano= ". strval($Ano);
+        $sqlCustos .= " and mes >= ". strval($Mes);
+        $sqlCustos .= " and mes<= ". strval($Mes+3);
+        if(isset($SCC) && !empty($SCC)):
+            $sqlCustos .= " and id_CentroCusto=". strval($SCC);
+        endif;
+        if($Tipo=="TotalGrupo" || $Tipo=="TotalCentroCusto"){
+            $sqlCustos .=" and id_CentroCusto=".strval($Cc);
+            if($Tipo=="TotalGrupo"){
+                $sqlCustos .=" and id_GrupoItemCC=".strval($GICC);
+            }
+        }            
+        if($Tipo=="Tudo"){
+            $sqlCustos .= " GROUP BY c_movcusto.id_CentroCusto, ";
+            $sqlCustos .= "c_tabcentrocusto.DescCentroCusto, ";
+            $sqlCustos .= "c_tabitemcc.id_GrupoItemCC, ";
+            $sqlCustos .= "c_tabgrupoitemcc.DescGrupoItemCC, ";
+            $sqlCustos .= "c_movcusto.id_ItemCC, ";
+            $sqlCustos .= "c_tabitemcc.DescItemCC ";        
+
+            $sqlCustos .= "ORDER BY  c_movcusto.id_CentroCusto, ";
+            $sqlCustos .= "c_tabitemcc.id_GrupoItemCC, ";
+            $sqlCustos .= "c_movcusto.id_ItemCC ";
+        }
+        return $sqlCustos;
+    }
+
+    /**
+     * <b>Imprime Linha de Total do Grupo:</b> Envelope os dados do Grupo e Centro de Custo em um array 
+     * e gera texto html para imprimir tabela do total do Grupo     
+     * @param ARRAY $Data = Atribuitivo
+     */
+    public function TotalGrupo(array $Data) {
+        $this->Custo = (int) $IdCusto;
+        $this->Data = $Data;
+        if (in_array('', $this->Data)):
+            $this->Error = ["Erro ao Atualizar: Para atualizar <b>{$this->Data['id_CentroCusto']}</b>, preencha todos os campos!", WS_ALERT];
+            $this->Result = false;
+        else:
+            $this->Update();
+        endif;
+    }
+
+    /**
      * <b>Atualizar o Lançamento:</b> Envelope os dados em uma array atribuitivo e informe o id de um lançamento
      * para atualiza-la no banco de dados!
      * @param INT $IdCusto = Id do Lançamento de Custo

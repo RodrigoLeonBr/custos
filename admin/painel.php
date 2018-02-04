@@ -66,13 +66,13 @@ endif;
                             <ul class="sub">
                                 <li><a href="painel.php?exe=lanccustos/create">Lançar Custos</a></li>
                                 <li><a href="painel.php?exe=lanccustos/index">Listar / Editar Lançamentos</a></li>
-                                <li><a href="painel.php?exe=lanccustos/relatorio&ano=2017&mes=1">Relatorio por Centro de Custo</a></li>
+                                <li><a href="painel.php?exe=lanccustos/relatorio">Relatorio por Centro de Custo</a></li>
                             </ul>
                         </li>                        
 
                         <li class="li<?php if (in_array('lanccustos', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Relatorios</a>
                             <ul class="sub">
-                                <li><a href="painel.php?exe=lanccustos/relatorio&ano=2017&mes=7">Relatorio por Centro de Custo</a></li>
+                                <li><a href="painel.php?exe=lanccustos/relatorio">Relatorio por Centro de Custo</a></li>
                             </ul>
                         </li>                        
 

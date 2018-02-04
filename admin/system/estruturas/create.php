@@ -56,14 +56,14 @@ endif;
                         <option value="null"> Selecione a Estrutura Principal: </option>
                         <?php
                         $readEst = new Read;
-                        $readEst->ExeRead("estruturas", "WHERE estrutura_grupo IS NULL ORDER BY estrutura_descricao ASC");
+                        $readEst->ExeRead("c_estruturas", "WHERE estrutura_grupo IS NULL ORDER BY estrutura_descricao ASC");
                         if (!$readEst->getResult()):
                             echo '<option disabled="disabled" value="null"> Cadastre antes uma estrutura! </option>';
                         else:
                             foreach ($readEst->getResult() as $est):
-                                echo "<option value=\"{$est['estrutura_id']}\" ";
+                                echo "<option value=\"{$est['id_estrutura']}\" ";
 
-                                if ($est['estrutura_id'] == $data['estrutura_grupo']):
+                                if ($est['id_estrutura'] == $data['estrutura_grupo']):
                                     echo ' selected="selected" ';
                                 endif;
 
