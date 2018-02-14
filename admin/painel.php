@@ -49,8 +49,7 @@ endif;
                 </ul>
 
                 <nav>
-                    <h1><a href="painel.php" title="Dasboard">Principal</a></h1>
-
+          
                     <?php
                     //ATIVA MENU
                     if (isset($getexe)):
@@ -60,31 +59,68 @@ endif;
                     endif;
                     ?>
 
-                    <ul class="nav">
+                    <ul class="menu">
 
+                        <li class="li<?php if (empty($linkto)) echo ' active'; ?>"><a class="opensub" href="painel.php">Principal</a>
                         <li class="li<?php if (in_array('lanccustos', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Custos</a>
-                            <ul class="sub">
-                                <li><a href="painel.php?exe=lanccustos/create">Lançar Custos</a></li>
+                            <ul class="submenu-1">
+                                <li><a onclick="return false;" href="#">Cadastros</a>
+                                    <ul class="submenu-2">
+                                        <li><a href="painel.php?exe=lanccustos/index">Unidades</a>
+                                            <ul class="submenu-3">
+                                                <li><a href="painel.php?exe=lanccustos/index">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=lanccustos/index">Lista/Editar</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="painel.php?exe=lanccustos/index">Grupos</a>
+                                            <ul class="submenu-3">
+                                                <li><a href="painel.php?exe=lanccustos/index">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=lanccustos/index">Lista/Editar</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="painel.php?exe=lanccustos/index">Sub Grupos</a>
+                                            <ul class="submenu-3">
+                                                <li><a href="painel.php?exe=lanccustos/index">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=lanccustos/index">Lista/Editar</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="painel.php?exe=lanccustos/index">Ítens de Laçamento</a>
+                                            <ul class="submenu-3">
+                                                <li><a href="painel.php?exe=lanccustos/index">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=lanccustos/index">Lista/Editar</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li><a href="painel.php?exe=lanccustos/createlanc">Lançamento de Custos</a></li>
                                 <li><a href="painel.php?exe=lanccustos/index">Listar / Editar Lançamentos</a></li>
-                                <li><a href="painel.php?exe=lanccustos/relatorio">Relatorio por Centro de Custo</a></li>
+                                <li><a href="painel.php?exe=relatorios/relatorio">Relatorio por Centro de Custo</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="li<?php if (in_array('auxiliares', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Tabelas Auxiliares</a>
+                            <ul class="submenu-1">
+                                <li><a href="painel.php?exe=relatorios/relatorio">Folha de Pagamento</a></li>
+                                <li><a href="painel.php?exe=auxiliares/indexalmoxarifado">Dispensa do Almoxarifado</a></li>
+                                <li><a href="painel.php?exe=relatorios/relatorio">Outras Despesas</a></li>
                             </ul>
                         </li>                        
 
-                        <li class="li<?php if (in_array('lanccustos', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Relatorios</a>
-                            <ul class="sub">
-                                <li><a href="painel.php?exe=lanccustos/relatorio">Relatorio por Centro de Custo</a></li>
+                        <li class="li<?php if (in_array('relatorios', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Relatorios</a>
+                            <ul class="submenu-1">
+                                <li><a href="painel.php?exe=relatorios/relatorio">Relatorio por Centro de Custo</a></li>
                             </ul>
                         </li>                        
 
                         <li class="li<?php if (in_array('prestadores', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Prestadores</a>
-                            <ul class="sub">
+                            <ul class="submenu-1">
                                 <li><a href="painel.php?exe=prestadores/create">Cadastrar Prestadores</a></li>
                                 <li><a href="painel.php?exe=prestadores/index">Listar / Editar Prestadores</a></li>
                             </ul>
                         </li>                        
                         
                         <li class="li<?php if (in_array('estruturas', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Estruturas</a>
-                            <ul class="sub">
+                            <ul class="submenu-1">
                                 <li><a href="painel.php?exe=estruturas/create">Cadastrar Estruturas</a></li>
                                 <li><a href="painel.php?exe=estruturas/index">Listar / Editar Estruturas</a></li>
                             </ul>

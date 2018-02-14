@@ -72,7 +72,7 @@ body.painel{background: url(../images/header_bg.png) repeat-x #fbfbfb;}
 #navadmin nav ul .li{float: left; margin-right: 5px; position: relative;}
 #navadmin nav ul li:hover .opensub{background: #F2F2F2; color: #333}
 #navadmin nav ul .li:last-child{margin: 0;}
-#navadmin nav ul .li .opensub{float: left; padding: 10px 20px; color: #fff; background: #005875; font-size: 14px; font-weight: 600; border-bottom: 1px solid #777777;}
+#navadmin nav ul .li .opensub{float: left; padding: 5px 20px; color: #fff; background: #005875; font-size: 14px; font-weight: 600; border-bottom: 1px solid #777777;}
 #navadmin nav ul .li .opensub:hover{background: #F2F2F2;}
 #navadmin nav ul li:hover .sub{display: block;}
 #navadmin nav ul .li .sub{position: absolute; top: 33px; width: 960px;}
@@ -239,3 +239,114 @@ body.painel{background: url(../images/header_bg.png) repeat-x #fbfbfb;}
 .main_footer{background: #00254A; width: 100%; padding: 30px 0; text-align: center; border-top: 2px solid #444;}
 .main_footer a{font-size: 14px; color: #fff; font-variant: small-caps;}
 .main_footer a:hover{text-decoration: underline;}
+
+
+            /*Configurações Padrões*/
+            ul.menu, .menu li, .menu a{ 
+                margin:0; 
+                padding:0; 
+                list-style:none; 
+                text-decoration:none;
+            }
+            ul.menu ul{
+                position:absolute; 
+                display:none; 
+                box-shadow:3px 3px 2px #333;
+            }
+
+            /* Configurações nivel 1*/
+            ul.menu{ 
+                float:left; 
+                font-family:Verdana, Geneva, sans-serif; 
+                font-size:15px; 
+                border-radius:5px; 
+                padding:0 5px;
+            }
+            .menu li{ 
+                float:left; 
+                width:auto;
+                position:relative;
+            }
+            .menu li a{ 
+                display:block; 
+                padding:0 10px; 
+                line-height:45px; 
+                height:45px; 
+                float:left; 
+                transition:all 0.1s linear; 
+            }
+
+            /* Configurações nivel 2*/
+            .menu li:hover > ul.submenu-1{ 
+                display:block; 
+                top:50px; 
+                left:0; 
+                padding:5px; 
+                width:270px; 
+                border-radius:0 0 5px 5px;   
+            }
+            .menu ul.submenu-1 a{  
+                width:230px; 
+                padding:0 20px; 
+                border-radius:5px;  
+            }
+
+            /* Configurações nivel 2*/
+            .menu li:hover > ul.submenu-2{ 
+                display:block; 
+                top:0; 
+                left:270px; 
+                padding:5px; 
+                width:210px;  
+                border-radius: 0 5px 5px 5px; 
+            }
+            .menu ul.submenu-2 a{  
+                width:170px; 
+                padding:0 20px; 
+                border-radius:5px; 
+            }
+
+            /* Configurações nivel 3*/
+            .menu li:hover > ul.submenu-3{ 
+                display:block; 
+                top:0; 
+                left:210px; 
+                padding:5px; width:190px;
+                border-radius: 0 5px 5px 5px; 
+            }
+            .menu ul.submenu-3 a{  
+                width:150px; 
+                padding:0 20px; 
+                border-radius:5px; 
+            }
+
+
+            /*Configurações de cores*/
+
+            /*nivel 1*/
+            .menu{
+                align-items: center;
+                background:#006699; 
+            }
+            .menu a{ 
+                color:#000;
+            }
+            .menu li:hover > a{ 
+                background:#0787c7;  
+                color:#333;
+            }
+
+            /*nivel 2*/
+            .submenu-1{ background:#0787c7;}
+            .submenu-1 a{color:#fff;}
+            .submenu-1 li:hover > a{ background:#b7e0f5; }
+
+            /*nivel 3*/
+            .submenu-2{ background:#c9dbf2;}
+            .submenu-2 a{color:#333;}
+            .submenu-2 li:hover > a{ background:#fff; }
+
+            /*nivel 3*/
+            .submenu-3{ background:#333;}
+            .submenu-3 a{color:#fff;}
+            .submenu-3 li:hover > a{ background:#000; }

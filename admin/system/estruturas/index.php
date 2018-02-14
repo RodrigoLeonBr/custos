@@ -29,10 +29,10 @@
                 extract($grupo);
 
                 $readEsts = new Read;
-                $readEsts->ExeRead("c_estruturas", "WHERE estrutura_grupo = :parent and estrutura_subgrupo IS NULL", "parent={$id_estrutura}");
+                $readEsts->ExeRead("c_estruturas", "WHERE estrutura_grupo = :parent and estrutura_subgrupo IS NULL", "parent={$idestrutura}");
 
                 $readSubs = new Read;
-                $readSubs->ExeRead("c_estruturas", "WHERE estrutura_grupo = '".$id_estrutura."' and estrutura_subgrupo = '".$estrutura_grupo."'");
+                $readSubs->ExeRead("c_estruturas", "WHERE estrutura_grupo = '".$idestrutura."' and estrutura_subgrupo = '".$estrutura_grupo."'");
 
                 $countGrupoEst = $readEsts->getRowCount();
                 $countGrupoSub = $readSubs->getRowCount();
@@ -46,8 +46,8 @@
                         <ul class="info post_actions">
                             <li><strong>Valor </strong> <?= $estrutura_apoio1; ?></li>
                             <li><a class="act_view" target="_blank" href="../estruturas/<?= $estrutura_descricao; ?>" title="Ver no site">Ver no site</a></li>
-                            <li><a class="act_edit" href="painel.php?exe=estruturas/update&catid=<?= $id_estrutura; ?>" title="Editar">Editar</a></li>
-                            <li><a class="act_delete" href="painel.php?exe=estruturas/index&delete=<?= $id_estrutura; ?>" title="Excluir">Deletar</a></li>
+                            <li><a class="act_edit" href="painel.php?exe=estruturas/update&catid=<?= $idestrutura; ?>" title="Editar">Editar</a></li>
+                            <li><a class="act_delete" href="painel.php?exe=estruturas/index&delete=<?= $idestrutura; ?>" title="Excluir">Deletar</a></li>
                         </ul>
                     </header>
                 
@@ -55,7 +55,7 @@
                     
                     <?php
                     $readGrupo = new Read;
-                    $readGrupo->ExeRead("c_estruturas", "WHERE estrutura_grupo = :grupo","grupo={$id_estrutura}");
+                    $readGrupo->ExeRead("c_estruturas", "WHERE estrutura_grupo = :grupo","grupo={$idestrutura}");
                     if (!$readGrupo->getResult()):
 
                     else:
@@ -64,15 +64,15 @@
                             $a++;
 
                             $readEstSub = new Read;
-                            $readEstSub->ExeRead("c_estruturas", "WHERE estrutura_grupo = '".$id_estrutura."' and estrutura_subgrupo = '".$sub['estrutura_grupo']."'");
+                            $readEstSub->ExeRead("c_estruturas", "WHERE estrutura_grupo = '".$idestrutura."' and estrutura_subgrupo = '".$sub['estrutura_grupo']."'");
                             ?>
                             <article<?php if ($a % 3 == 0) echo ' class="right"'; ?>>
                                 <h1><a target="_blank" href="../estruturas/<?= $sub['estrutura_apoio2']; ?>" title="Ver Grupo"><?= $sub['estrutura_descricao']; ?></a>  ( <?= $readEstSub->getRowCount(); ?> subgrupos )</h1>
 
                                 <ul class="info post_actions">
                                     <li><a class="act_view" target="_blank" href="../estruturas/<?= $sub['estrutura_apoio2']; ?>" title="Ver no site">Ver no site</a></li>
-                                    <li><a class="act_edit" href="painel.php?exe=estruturas/update&estid=<?= $sub['id_estrutura']; ?>" title="Editar">Editar</a></li>
-                                    <li><a class="act_delete" href="painel.php?exe=estruturas/index&delete=<?= $sub['id_estrutura']; ?>" title="Excluir">Deletar</a></li>
+                                    <li><a class="act_edit" href="painel.php?exe=estruturas/update&estid=<?= $sub['idestrutura']; ?>" title="Editar">Editar</a></li>
+                                    <li><a class="act_delete" href="painel.php?exe=estruturas/index&delete=<?= $sub['idestrutura']; ?>" title="Excluir">Deletar</a></li>
                                 </ul>
                             </article>
                             <?php
