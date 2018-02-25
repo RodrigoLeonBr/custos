@@ -27,7 +27,7 @@ endif;
             WSErro($cadastra->getError()[0], $cadastra->getError()[1]);
         else:
             $read = new Read;
-            $read->ExeRead("c_estruturas", "WHERE id_estrutura = :id", "id={$estid}");
+            $read->ExeRead("c_estruturas", "WHERE idestrutura = :id", "id={$estid}");
             if (!$read->getResult()):
                 header('Location: painel.php?exe=estruturas/index&empty=true');
             else:
@@ -74,9 +74,9 @@ endif;
                             echo '<option disabled="disabled" value="null"> Cadastre antes uma estrutura! </option>';
                         else:
                             foreach ($readEst->getResult() as $est):
-                                echo "<option value=\"{$est['id_estrutura']}\" ";
+                                echo "<option value=\"{$est['idestrutura']}\" ";
 
-                                if ($est['id_estrutura'] == $data['estrutura_grupo']):
+                                if ($est['idestrutura'] == $data['estrutura_grupo']):
                                     echo ' selected="selected" ';
                                 endif;
 

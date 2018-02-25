@@ -94,6 +94,35 @@ class AdminLancCusto {
     }
 
     /**
+     * <b>Realiza busca de Lançamentos na Estrutura:</b> Envelope os dados do lançamento em um array atribuitivo e execute esse método
+     * para cadastrar a mesma no banco.     
+     * @param INTEGER $Ano = Ano do Centro de Custo
+     * @param INTEGER $Mes = Primeiro mes do Quadrimestre a ser visualizado     
+     * @param INTEGER $CC = Centro de Custo por Grupo pode ser nulo
+     */
+    public function ExeBuscaEstrutura($Ano, $Mes, $CC) {
+        
+        $sqlEstrutura = "SELECT sum(case when mes=".$Mes." then Valor else 0 end) Mes1, ";
+        $sqlEstrutura .="sum(case when mes=".($Mes+1)." then Valor else 0 end) Mes2, ";
+        $sqlEstrutura .="sum(case when mes=".($Mes+2)." then Valor else 0 end) Mes3, ";
+        $sqlEstrutura .="sum(case when mes=".($Mes+3)." then Valor else 0 end) Mes4, ";
+        $sqlEstrutura .="id_estrutura, estrutura_apoio2 descricao ";
+        
+        $sqlEstrutura .= "FROM c_lancestrutura ";
+        $sqlEstrutura .= " INNER JOIN c_estruturas ON id_estrutura=idestrutura ";
+        
+        $sqlEstrutura .= " WHERE Ano= ". strval($Ano);
+        $sqlEstrutura .= " and mes >= ". strval($Mes);
+        $sqlEstrutura .= " and mes<= ". strval($Mes+3);
+        $sqlEstrutura .= " and id_CentroCusto=". strval($CC);
+        
+        $sqlEstrutura .= " GROUP BY id_estrutura, estrutura_apoio2 ";
+        $sqlEstrutura .= " ORDER BY id_estrutura, estrutura_apoio2 ";
+        
+        return $sqlEstrutura;
+    }
+
+    /**
      * <b>Imprime Linha de Total do Grupo:</b> Envelope os dados do Grupo e Centro de Custo em um array 
      * e gera texto html para imprimir tabela do total do Grupo     
      * @param ARRAY $Data = Atribuitivo

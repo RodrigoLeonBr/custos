@@ -66,10 +66,10 @@ endif;
                             <ul class="submenu-1">
                                 <li><a onclick="return false;" href="#">Cadastros</a>
                                     <ul class="submenu-2">
-                                        <li><a href="painel.php?exe=lanccustos/index">Unidades</a>
+                                        <li><a href="painel.php?exe=unidades/index">Unidades</a>
                                             <ul class="submenu-3">
-                                                <li><a href="painel.php?exe=lanccustos/index">Cadastrar</a></li>
-                                                <li><a href="painel.php?exe=lanccustos/index">Lista/Editar</a></li>
+                                                <li><a href="painel.php?exe=unidades/create">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=unidades/index">Lista/Editar</a></li>
                                             </ul>
                                         </li>
                                         <li><a href="painel.php?exe=lanccustos/index">Grupos</a>
@@ -100,7 +100,7 @@ endif;
 
                         <li class="li<?php if (in_array('auxiliares', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Tabelas Auxiliares</a>
                             <ul class="submenu-1">
-                                <li><a href="painel.php?exe=relatorios/relatorio">Folha de Pagamento</a></li>
+                                <li><a href="painel.php?exe=auxiliares/indexfolha">Folha de Pagamento</a></li>
                                 <li><a href="painel.php?exe=auxiliares/indexalmoxarifado">Dispensa do Almoxarifado</a></li>
                                 <li><a href="painel.php?exe=relatorios/relatorio">Outras Despesas</a></li>
                             </ul>
@@ -124,11 +124,9 @@ endif;
                                 <li><a href="painel.php?exe=estruturas/create">Cadastrar Estruturas</a></li>
                                 <li><a href="painel.php?exe=estruturas/index">Listar / Editar Estruturas</a></li>
                             </ul>
-                        </li>                        
-
+                        </li>
                     </ul>
                 </nav>
-
                 <div class="clear"></div>
             </div><!--/CONTENT-->
         </header>

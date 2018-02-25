@@ -232,7 +232,7 @@ body.painel{background: url(../images/header_bg.png) repeat-x #fbfbfb;}
 .ultable li .ed a:last-child{background-color: #efc3c2;}
 .ultable li .ed a:last-child:hover{background-color: red;}
 .ultable li .ed .action{width: 25px; height: 22px; display: block; font-size: 0; float: left;}
-.ultable li .ed .user_edit{background: #ccc url(../icons/act_edit.png) center center no-repeat; background-size: 70%}
+.ultable li .ed .user_edit{background: #ccc url(../icons/act_edit.png)url(../icons/act_edit.png) center center no-repeat; background-size: 70%}
 .ultable li .ed .user_dele{background: #ccc url(../icons/act_delete.png) center center no-repeat; background-size: 70%}
 
 /*FOOTER GERAL*/
@@ -240,113 +240,218 @@ body.painel{background: url(../images/header_bg.png) repeat-x #fbfbfb;}
 .main_footer a{font-size: 14px; color: #fff; font-variant: small-caps;}
 .main_footer a:hover{text-decoration: underline;}
 
+/*MENU PRINCIPAL*/
 
-            /*Configurações Padrões*/
-            ul.menu, .menu li, .menu a{ 
-                margin:0; 
-                padding:0; 
-                list-style:none; 
-                text-decoration:none;
-            }
-            ul.menu ul{
-                position:absolute; 
-                display:none; 
-                box-shadow:3px 3px 2px #333;
-            }
+/* Pencil */
+div.icon {
+    height: 22px;
+    width: 22px;
+    position: relative;
+    margin: 1px;
+    overflow: hidden;
+    display: inline-block;
+}
 
-            /* Configurações nivel 1*/
-            ul.menu{ 
-                float:left; 
-                font-family:Verdana, Geneva, sans-serif; 
-                font-size:15px; 
-                border-radius:5px; 
-                padding:0 5px;
-            }
-            .menu li{ 
-                float:left; 
-                width:auto;
-                position:relative;
-            }
-            .menu li a{ 
-                display:block; 
-                padding:0 10px; 
-                line-height:45px; 
-                height:45px; 
-                float:left; 
-                transition:all 0.1s linear; 
-            }
+div.icon div.pencil {
+    height: 16px;
+    width: 4px;
+    background: #333;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    position: absolute;
+    left: 8px;
+    top: 4px;
+}
 
-            /* Configurações nivel 2*/
-            .menu li:hover > ul.submenu-1{ 
-                display:block; 
-                top:50px; 
-                left:0; 
-                padding:5px; 
-                width:270px; 
-                border-radius:0 0 5px 5px;   
-            }
-            .menu ul.submenu-1 a{  
-                width:230px; 
-                padding:0 20px; 
-                border-radius:5px;  
-            }
+div.icon div.pencil:after {
+    content: '';
+    height: 3px;
+    width: 4px;
+    background: #333;
+    -webkit-border-radius: 2px 2px 0 0;
+    -moz-border-radius: 2px 2px 0 0;
+    border-radius: 2px 2px 0 0;
+    position: absolute;
+    top: -3px;
+    left: 0px;
+}
 
-            /* Configurações nivel 2*/
-            .menu li:hover > ul.submenu-2{ 
-                display:block; 
-                top:0; 
-                left:270px; 
-                padding:5px; 
-                width:210px;  
-                border-radius: 0 5px 5px 5px; 
-            }
-            .menu ul.submenu-2 a{  
-                width:170px; 
-                padding:0 20px; 
-                border-radius:5px; 
-            }
+div.icon div.pencil:before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    border-width: 3px 2px 0 2px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+    position: absolute;
+    bottom: -4px;
+}
+/* Tick */
+div.icon div.tick {
+    width: 25px;
+    height: 4px;
+    background: #333;
+    margin: 2px 0 0 1px;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
 
-            /* Configurações nivel 3*/
-            .menu li:hover > ul.submenu-3{ 
-                display:block; 
-                top:0; 
-                left:210px; 
-                padding:5px; width:190px;
-                border-radius: 0 5px 5px 5px; 
-            }
-            .menu ul.submenu-3 a{  
-                width:150px; 
-                padding:0 20px; 
-                border-radius:5px; 
-            }
+div.icon div.tick:after {
+    content: '';
+    width: 12px;
+    height: 4px;
+    background: #333;
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+/* Cross */
+div.icon div.cross {
+    width: 17px;
+    height: 3px;
+    background: #fd0606;
+    margin: 10px 0 0 1px;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+div.icon div.cross:after {
+    content: '';
+    width: 17px;
+    height: 3px;
+    background: #fd0606;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
 
 
-            /*Configurações de cores*/
+    /*Configurações Padrões*/
+    ul.menu, .menu li, .menu a{ 
+        margin:0; 
+        padding:0; 
+        list-style:none; 
+        text-decoration:none;
+    }
+    ul.menu ul{
+        position:absolute; 
+        display:none; 
+        box-shadow:3px 3px 2px #333;
+    }
 
-            /*nivel 1*/
-            .menu{
-                align-items: center;
-                background:#006699; 
-            }
-            .menu a{ 
-                color:#000;
-            }
-            .menu li:hover > a{ 
-                background:#0787c7;  
-                color:#333;
-            }
+    /* Configurações nivel 1*/
+    ul.menu{ 
+        float:left; 
+        font-family:Verdana, Geneva, sans-serif; 
+        font-size:15px; 
+        border-radius:5px; 
+        padding:0 5px;
+    }
+    .menu li{ 
+        float:left; 
+        width:auto;
+        position:relative;
+    }
+    .menu li a{ 
+        display:block; 
+        padding:0 10px; 
+        line-height:45px; 
+        height:45px; 
+        float:left; 
+        transition:all 0.1s linear; 
+    }
 
-            /*nivel 2*/
-            .submenu-1{ background:#0787c7;}
-            .submenu-1 a{color:#fff;}
-            .submenu-1 li:hover > a{ background:#b7e0f5; }
+    /* Configurações nivel 2*/
+    .menu li:hover > ul.submenu-1{ 
+        display:block; 
+        top:50px; 
+        left:0; 
+        padding:5px; 
+        width:270px; 
+        border-radius:0 0 5px 5px;   
+    }
+    .menu ul.submenu-1 a{  
+        width:230px; 
+        padding:0 20px; 
+        border-radius:5px;  
+    }
 
-            /*nivel 3*/
-            .submenu-2{ background:#c9dbf2;}
-            .submenu-2 a{color:#333;}
-            .submenu-2 li:hover > a{ background:#fff; }
+    /* Configurações nivel 2*/
+    .menu li:hover > ul.submenu-2{ 
+        display:block; 
+        top:0; 
+        left:270px; 
+        padding:5px; 
+        width:210px;  
+        border-radius: 0 5px 5px 5px; 
+    }
+    .menu ul.submenu-2 a{  
+        width:170px; 
+        padding:0 20px; 
+        border-radius:5px; 
+    }
 
-            /*nivel 3*/
-            .submenu-3{ background:#333;}
-            .submenu-3 a{color:#fff;}
-            .submenu-3 li:hover > a{ background:#000; }
+    /* Configurações nivel 3*/
+    .menu li:hover > ul.submenu-3{ 
+        display:block; 
+        top:0; 
+        left:210px; 
+        padding:5px; width:190px;
+        border-radius: 0 5px 5px 5px; 
+    }
+    .menu ul.submenu-3 a{  
+        width:150px; 
+        padding:0 20px; 
+        border-radius:5px; 
+    }
+
+
+    /*Configurações de cores*/
+
+    /*nivel 1*/
+    .menu{
+        align-items: center;
+        background:#006699; 
+    }
+    .menu a{ 
+        color:#000;
+    }
+    .menu li:hover > a{ 
+        background:#0787c7;  
+        color:#333;
+    }
+
+    /*nivel 2*/
+    .submenu-1{ background:#0787c7;}
+    .submenu-1 a{color:#fff;}
+    .submenu-1 li:hover > a{ background:#b7e0f5; }
+
+    /*nivel 3*/
+    .submenu-2{ background:#3eace3;}
+    .submenu-2 a{color:#fff; }
+    .submenu-2 li:hover > a{ background:#bddbff; }
+
+    /*nivel 3*/
+    .submenu-3{ background:#c9dbf2;}
+    .submenu-3 a{color:#000000;}
+    .submenu-3 li:hover > a{ background:#fff; }

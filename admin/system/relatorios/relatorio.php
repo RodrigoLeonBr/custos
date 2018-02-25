@@ -76,6 +76,7 @@
         $action = filter_input(INPUT_GET, 'action', FILTER_DEFAULT);
         require ('_models/AdminLancCusto.class.php');
         $relcusAction = new AdminLancCusto();
+        $relAlmox = new AdminLancCusto();
         
         
         $SAno = filter_input(INPUT_GET, 'ano', FILTER_DEFAULT);
@@ -98,13 +99,12 @@
         if(!empty($SAno) && !empty($Smes)):
             $readCustoTotal = new Read;
             $readCustoDireto = new Read;
+            $readLançamento = new Read;
             $readCusto = new Read;
           
             $readCusto->FullRead($relcusAction->ExeBuscaCusto("Tudo",$SAno, $Smes, NULL , NULL , $SCC));
-
             if ($readCusto->getResult()):
                 /** CABEÇALHO*/
-
             ?>
 
             <div class='container'>
@@ -203,11 +203,9 @@
                         $M3=" ";
                         $M4=" ";                    
                 }
-
                   foreach ($readCusto->getResult() as $rel): 
                       /** TOTAL CENTRO DE CUSTO */
                       if($CentrodeCusto <> $rel["id_CentroCusto"]){
-
                         if($CentrodeCusto<>0){
                           echo "<tr>";
                               echo "<td align=left><b>TOTAL: </b></td>";
@@ -236,7 +234,6 @@
                                 echo "<td align=right> ".number_format(0,2, ',','.')."</td>";
                               }
                           echo "</tr>";
-
                           echo "<tr>";
                               echo "<td align=left><b>TOTAL CUSTOS DIRETOS: </b></td>";                          
                               echo "<td align=right><b>".number_format($Rdir[0]["Mes1"],2, ',','.')."</b></td>";
@@ -248,13 +245,33 @@
                               echo "<td align=right><b>".number_format($Rdir[0]["Mes4"],2, ',','.')."</b></td>";
                               echo "<td align=right></td>";
                           echo "</tr>";
+                        
+                          /*Imprime lançamento de Estruturas*/                          
+                          $readLançamento->FullRead($relAlmox->ExeBuscaEstrutura($SAno, $Smes, $rel["id_CentroCusto"]));
+                          
+                          echo "<tr>";
+                            echo "<td><strong>OUTROS LANÇAMENTOS </strong></td>";
+                          echo "</tr>";
+                          
+                          foreach ($readLançamento->getResult() as $rellan): 
+                            echo "<tr>";
+                              echo "<td align=left><b>".$rellan["descricao"]."</b></td>";                          
+                              echo "<td align=right><b>".number_format($rellan["Mes1"],2, ',','.')."</b></td>";
+                              echo "<td align=right></td>";
+                              echo "<td align=right><b>".number_format($rellan["Mes2"],2, ',','.')."</b></td>";
+                              echo "<td align=right></td>";
+                              echo "<td align=right><b>".number_format($rellan["Mes3"],2, ',','.')."</b></td>";
+                              echo "<td align=right></td>";
+                              echo "<td align=right><b>".number_format($rellan["Mes4"],2, ',','.')."</b></td>";
+                              echo "<td align=right></td>";
+                            echo "</tr>";
+                          endforeach;
+                          
                           echo "<tr><td colspan=9 style='border-top: 1px solid black;'>&nbsp;</td></tr>";
-
                         }
                         echo "<tr>";
                             echo "<td colspan=9 style='border-bottom: 1px solid black;'><strong>CENTRO DE CUSTO: ". $rel["id_CentroCusto"]." - ".$rel["DescCentroCusto"] ."</strong></td>";
                         echo "</tr>";
-
                         echo "<tr>";
                             echo "<td></td>";
                             echo "<td align=right><b>".$M1."/".$SAno."</b></td>";
@@ -266,7 +283,6 @@
                             echo "<td align=right><b>".$M4."/".$SAno."</b></td>";
                             echo "<td align=right></td>";
                         echo "</tr>";
-
                         echo "<tr>";
                             echo "<td style='width: 30%'><b>CUSTOS DIRETOS </b></td>";
                             echo "<td style='width: 12%' align=right><b>Valor</b></td>";
@@ -279,7 +295,6 @@
                             echo "<td style='width: 5%' align=right><b>%</b></td>";
                         echo "</tr>";
                         echo "<tr><td>&nbsp;</td></tr>";
-
                         $readCustoTotal->FullRead($relcusAction->ExeBuscaCusto("TotalGrupo",$SAno, $Smes, $rel["id_GrupoItemCC"], $rel["id_CentroCusto"], $SCC));
                         $Rtot = $readCustoTotal->getResult();
                         
@@ -287,10 +302,8 @@
                         $Rdir = $readCustoDireto->getResult();
                         $CentrodeCusto = $rel["id_CentroCusto"];                    
                       }
-
                       /** TOTAL GRUPO DE ITEM */
                       if($GrupoItemCusto <> $rel["id_GrupoItemCC"]){
-
                           if($GrupoItemCusto <>0){
                             echo "<tr>";
                                 echo "<td align=left><b>TOTAL: </b></td>";
@@ -323,17 +336,15 @@
                           echo "<tr>";
                           echo "<td><b>".$rel["DescGrupoItemCC"]."</b></td>";
                           echo "</tr>";
-
                           $readCustoTotal->FullRead($relcusAction->ExeBuscaCusto("TotalGrupo",$SAno, $Smes, $rel["id_GrupoItemCC"], $rel["id_CentroCusto"], $SCC));
                           $Rtot = $readCustoTotal->getResult();
-
                           $GrupoItemCusto=$rel["id_GrupoItemCC"];
                       }
-
+                      /* LINHAS DE INFORMAÇÃO*/
+                      $Lm1="<a href=http://localhost/custos/admin/painel.php?exe=auxiliares/indexalmoxarifado&ano=".$SAno."&mes=".$Smes."&cc=".$rel["id_CentroCusto"]."&itemcc=".$rel["id_ItemCC"].">";
                       echo "<tr>";
-
                         echo "<td>".$rel["DescItemCC"]."</td>";
-                        echo "<td align=right>".number_format($rel["Mes1"],2, ',','.')."</td>";
+                        echo "<td align=right>".$Lm1.number_format($rel["Mes1"],2, ',','.')."</a></td>";
                         if($rel["Mes1"]>0 & $Rtot[0]["Mes1"]>0){
                             echo "<td align=right> ".number_format(($rel["Mes1"]/$Rtot[0]["Mes1"]*100),2, ',','.')."</td>";
                         }else{
@@ -358,11 +369,8 @@
                             echo "<td align=right> ".number_format(0,2, ',','.')."</td>";
                         }
                       echo "</tr>";
-
-
                       $CentrodeCusto = $rel["id_CentroCusto"];
                       $GrupoItemCusto = $rel["id_GrupoItemCC"];
-
                   endforeach;
                   /*
                    * Total e Total Custo Direto Final
@@ -405,8 +413,28 @@
                      echo "<td align=right><b>".number_format($Rdir[0]["Mes4"],2, ',','.')."</b></td>";
                      echo "<td align=right></td>";
                  echo "</tr>";
-                 
 
+                /*Imprime lançamento de Estruturas*/
+                $readLançamento->FullRead($relcusAction->ExeBuscaEstrutura($SAno, $Smes, $rel["id_CentroCusto"]));
+
+                echo "<tr>";
+                  echo "<td><strong>OUTROS LANÇAMENTOS </strong></td>";
+                echo "</tr>";
+
+                foreach ($readLançamento->getResult() as $rellan): 
+                  echo "<tr>";
+                    echo "<td align=left><b>".$rellan["descricao"]."</b></td>";                          
+                    echo "<td align=right><b>".number_format($rellan["Mes1"],2, ',','.')."</b></td>";
+                    echo "<td align=right></td>";
+                    echo "<td align=right><b>".number_format($rellan["Mes2"],2, ',','.')."</b></td>";
+                    echo "<td align=right></td>";
+                    echo "<td align=right><b>".number_format($rellan["Mes3"],2, ',','.')."</b></td>";
+                    echo "<td align=right></td>";
+                    echo "<td align=right><b>".number_format($rellan["Mes4"],2, ',','.')."</b></td>";
+                    echo "<td align=right></td>";
+                  echo "</tr>";
+                endforeach;
+                 
               endif;
         endif;
     ?>

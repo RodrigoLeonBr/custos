@@ -10,35 +10,43 @@
             //OBJETO READ
             $read = new Read;
 
-            //VISITAS DO SITE
-            $read->FullRead("SELECT SUM(siteviews_views) AS views FROM ws_siteviews");
-            $Views = $read->getResult()[0]['views'];
+            //Ano Inicial de Lançamento
+            $read->FullRead("SELECT MIN(Ano) AS Anoi FROM c_movcusto");
+            $Anoi = $read->getResult()[0]['Anoi'];
 
-            //USUÁRIOS
-            $read->FullRead("SELECT SUM(siteviews_users) AS users FROM ws_siteviews");
-            $Users = $read->getResult()[0]['users'];
+            //Mes Inicial de Lançamento
+            $read->FullRead("SELECT MIN(Mes) AS Mesi FROM c_movcusto Where Ano=".$Anoi);
+            $Mesi = $read->getResult()[0]['Mesi'];
 
-            //MÉDIA DE PAGEVIEWS
-            $read->FullRead("SELECT SUM(siteviews_pages) AS pages FROM ws_siteviews");
-            $ResPages = $read->getResult()[0]['pages'];
-            $Pages = substr($ResPages / $Users, 0, 5);
+            //Ano Final de Lançamento
+            $read->FullRead("SELECT MAX(Ano) AS Anof FROM c_movcusto");
+            $Anof = $read->getResult()[0]['Anof'];
 
-            //POSTS
-            $read->ExeRead("ws_posts");
-            $Posts = $read->getRowCount();
+            //Mes Final de Lançamento
+            $read->FullRead("SELECT MAX(Mes) AS Mesf FROM c_movcusto Where Ano=".$Anof);
+            $Mesf = $read->getResult()[0]['Mesf'];
 
-            //EMPRESAS
-            $read->ExeRead("app_empresas");
-            $Empresas = $read->getRowCount();
+            //DESPESAS TOTAL
+            $read->FullRead("SELECT SUM(Valor) AS Total FROM c_movcusto WHERE Ano=".$Anof." AND Mes=".$Mesf);
+            $Total = $read->getResult()[0]['Total'];
+
+            //FUNCIONÁRIOS TOTAL
+            $read->FullRead("SELECT SUM(Valor) AS Total FROM c_lancestrutura WHERE Ano=".$Anof." AND Mes=".$Mesf." AND id_estrutura=5");
+            $Funcionario = $read->getResult()[0]['Total'];
+
+            //Ìtens Dispensados
+            $read->FullRead("SELECT SUM(QtdConsumo) AS Total FROM c_consumo WHERE Ano=".$Anof." AND Mes=".$Mesf);
+            $Itens = $read->getResult()[0]['Total'];
+            
             ?>
 
             <ul>
-                <li class="view"><span><?= $Views; ?></span> visitas</li>
-                <li class="user"><span><?= $Users; ?></span> usuários</li>
-                <li class="page"><span><?= $Pages; ?></span> pageviews</li>
+                <li class="view"><span><?= $Anoi."/".str_pad($Mesi,2,'0',STR_PAD_LEFT); ?></span> Custo Inicial</li>
+                <li class="user"><span><?= $Anof."/".str_pad($Mesf,2,'0',STR_PAD_LEFT); ?></span> Custo Final</li>
+                <li class="page"><span><?= number_format($Total,2, ',','.'); ?></span> Custo Último mês</li>
                 <li class="line"></li>
-                <li class="post"><span><?= $Posts; ?></span> posts</li>
-                <li class="emp"><span><?= $Empresas; ?></span> empresas</li>
+                <li class="post"><span><?= number_format($Funcionario,0, ',','.'); ?></span> Funcionários</li>
+                <li class="emp"><span><?= number_format($Itens,0, ',','.'); ?></span> Ítens Dispensados</li>
                 <!--<li class="comm"><span>38</span> comentários</li>-->
             </ul>
             <div class="clear"></div>

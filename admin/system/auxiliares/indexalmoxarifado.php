@@ -2,15 +2,40 @@
 
     <section class="form_pesquisao">
         <header>
-            <h1>Lançamentos realziados de Consumo/Amoxarifado - Filtro dos ítens</h1>
+            <h1>Lançamentos realizados de Consumo/Amoxarifado - Filtro dos ítens</h1>
         </header>
         
         <?php
 /**
  * BUSCA PELAS VARÁVEIS DE ALMOXARIFADO
  */
+        $empty = filter_input(INPUT_GET, 'empty', FILTER_VALIDATE_BOOLEAN);
+        if ($empty):
+            WSErro("Oppsss: Você tentou editar um prestador que não existe no sistema!", WS_INFOR);
+        endif;
+
+        $action = filter_input(INPUT_GET, 'action', FILTER_DEFAULT);
+        if ($action):
+            require ('_models/AdminAlmoxarifado.class.php');
+
+            $almoxAction = filter_input(INPUT_GET, 'prest', FILTER_VALIDATE_INT);
+            $almoxUpdate = new AdminAlmoxarifado();
+
+            switch ($action):
+                case 'delete':
+                    $almoxUpdate->ExeDelete($almoxAction);
+                    WSErro($almoxUpdate->getError()[0], $almoxUpdate->getError()[1]);
+                    break;
+
+                default :
+                    WSErro("Ação não foi identifica pelo sistema, favor utilize os botões!", WS_ALERT);
+            endswitch;
+        endif;
+
+            
         $search = "";
         $Where = "";
+        
         $SAno = filter_input(INPUT_POST, 'ano', FILTER_DEFAULT);
         if (!empty($SAno)):
             $SAno = strip_tags(trim(urlencode($SAno)));
@@ -33,7 +58,7 @@
         if (!empty($SItemCC)):
             $SItemCC = strip_tags(trim(urlencode($SItemCC)));
             $search.="&itemcc=" . $SItemCC;
-            $Where.=(empty($Where) ? "Where Id_ItemCC=:itemcc " : " and Id_CentroCusto=:itemcc ");
+            $Where.=(empty($Where) ? "Where Id_ItemCC=:itemcc " : " and Id_ItemCC=:itemcc ");
         endif;
         if (!empty($SAno) || !empty($Smes)):
             header('Location: painel.php?exe=auxiliares/indexalmoxarifado' . $search);
@@ -64,11 +89,11 @@
                     <?php
                     $readMes = new Read;
                     $readMes->FullRead("SELECT DISTINCT Mes from c_movcusto");
-                    foreach ($readMes->getResult() as $pmes):
-                        echo "<option value=\"{$pmes['Mes']}\" ";
-                        if ($Smes == $pmes['Mes']): echo 'selected';
+                    foreach ($readMes->getResult() as $mes):
+                        echo "<option value=\"{$mes['Mes']}\" ";
+                        if ($Smes == $mes['Mes']): echo 'selected';
                         endif;
-                        echo "> {$pmes['Mes']} </option>";
+                        echo "> {$mes['Mes']} </option>";
                     endforeach;
                     ?>                        
                 </select>
@@ -103,48 +128,44 @@
         </form>
 
         <?php
-        $action = filter_input(INPUT_GET, 'action', FILTER_DEFAULT);
-        require ('_models/AdminAlmoxarifado.class.php');
-        $relAlmoxAction = new AdminAlmoxarifado();
-
         $search = "";
         $Where = "";
-        $SAno = filter_input(INPUT_POST, 'ano', FILTER_DEFAULT);
+
+        $SAno = filter_input(INPUT_GET, 'ano', FILTER_DEFAULT);
         if (!empty($SAno)):
             $SAno = strip_tags(trim(urlencode($SAno)));
             $search.="&ano=" . $SAno;
-            $Where=" Where Ano=:ano ";
-        endif;        
-        $Smes = filter_input(INPUT_POST, 'mes', FILTER_DEFAULT);
+            $Where.=(empty($Where) ? "Where Ano=:ano " : " and Ano=:ano ");
+        endif;
+        $Smes = filter_input(INPUT_GET, 'mes', FILTER_DEFAULT);
         if (!empty($Smes)):
             $Smes = strip_tags(trim(urlencode($Smes)));
             $search.="&mes=" . $Smes;
             $Where.=(empty($Where) ? "Where Mes=:mes " : " and Mes=:mes ");
         endif;
-        $SCC = filter_input(INPUT_POST, 'cc', FILTER_DEFAULT);
+        
+        $SCC = filter_input(INPUT_GET, 'cc', FILTER_DEFAULT);
         if (!empty($SCC)):
             $SCC = strip_tags(trim(urlencode($SCC)));
             $search.="&cc=" . $SCC;
             $Where.=(empty($Where) ? "Where Id_CentroCusto=:cc " : " and Id_CentroCusto=:cc ");
         endif;
-        $SItemCC = filter_input(INPUT_POST, 'itemcc', FILTER_DEFAULT);
-        if (!empty($SItemCC)):
-            $SItemCC = strip_tags(trim(urlencode($SItemCC)));
-            $search.="&itemcc=" . $SItemCC;
-            $Where.=(empty($Where) ? "Where Id_ItemCC=:itemcc " : " and Id_CentroCusto=:itemcc ");
-        endif;
-        if (!empty($SAno) || !empty($Smes) || !empty($SCC)):
-            header('Location: painel.php?exe=auxiliares/indexalmoxarifado' . $search);
+        
+        $ItemCC = filter_input(INPUT_GET, 'itemcc', FILTER_DEFAULT);
+        if (!empty($ItemCC)):
+            $SCC = strip_tags(trim(urlencode($SCC)));
+            $search.="&itemcc=" . $ItemCC;
+            $Where.=(empty($Where) ? "Where Id_ItemCC=:itemcc " : " and Id_ItemCC=:itemcc ");
         endif;
         
         $almoxi = 0;
         $getPage = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
         $Pager = new Pager('painel.php?exe=auxiliares/indexalmoxarifado'.$search.'&page=');
-        $Pager->ExePager($getPage, 50);
+        $Pager->ExePager($getPage, 100);
 
         $readAlmox = new Read;
                     
-        if(!empty($SAno) && !empty($Smes) && !empty($SCC)):
+        if(!empty($SAno) && !empty($Smes) ):
             $Sql = "SELECT idConsumo, c_consumo.Ano Ano, c_consumo.Mes Mes, c_consumo.CC CC, c_consumo.DescCC DescCC, ";
             $Sql.= "c_consumo.Id_CentroCusto CentroCusto, c_tabcentrocusto.DescCentroCusto DescCentroCusto, ";
             $Sql.= "c_consumo.idItem Item, c_itemestoque.DescricaoItem DescItem, ";
@@ -155,32 +176,121 @@
             $Sql.= "INNER JOIN c_itemestoque on c_itemestoque.idItem=c_consumo.idItem ";
             $Sql.= "INNER JOIN c_tabitemcc on c_tabitemcc.idItemCC=c_consumo.id_ItemCC ";
             $Sql.= $Where;
-            $Sql.= " LIMIT :limit OFFSET :offset ";
-            
+            $Sql.= " ORDER BY c_consumo.Ano, c_consumo.Mes, c_consumo.CC, c_consumo.Id_CentroCusto, c_consumo.id_ItemCC, c_itemestoque.DescricaoItem ";
+            $Sql.= " LIMIT :limit OFFSET :offset ";            
+                     
             
             $readAlmox->FullRead($Sql, "limit={$Pager->getLimit()}&offset={$Pager->getOffset()}".$search);
             if ($readAlmox->getResult()):
+                $Pano=0;
+                $pmes=0;
+                $pcc=0;
+                $pmoc=0;
+                $Sbqt=0;
+                $Sbvl=0;
+                $Tqt=0;
+                $Tvl=0;
+            
+                ?>
+            
+                <table width="100%" border="0" cellspacing="1" cellpadding="0" bgcolor="#CCCCCC" >
+                    <tr bgcolor="#FFFFFF">
+                        <th width=35% ><strong>Ítem</strong></th>
+                        <th width=3% ><strong>Qtd</strong></th>
+                        <th width=4% ><strong>Vl Uni</strong></th>
+                        <th width=5% ><strong>Vl Total</strong></th>
+                        <th width=4.5% >Edição</th>
+                    </tr>
+                <?php    
                 foreach ($readAlmox->getResult() as $almox):
-                    $almoxi++;
                     extract($almox);
-                    $status = (!$prestador_status ? 'style="background: #fffed8"' : '');
+                    
+                    if(($Pano<>$Ano || $pmes<>$Mes || $pcc<>$CC) && $Sbqt<>0){
+                        echo "<tr bgcolor='#FFFFFF' >";
+                        echo "<td><strong>SubTotal</strong></td>";
+                        echo "<td align=right><strong>".number_format($Sbqt,0, ',','.')."</strong></td>";
+                        echo "<td><strong></strong></td>";
+                        echo "<td align=right><strong>".number_format($Sbvl,2, ',','.')."</strong></td>";
+                        echo "<td></td>";
+                        echo "</tr>";
+                        
+                        $Sbqt=0;
+                        $Sbvl=0;
+                    }
+                    if($pmoc<>$Movimento && $Sbqt<>0){
+                        echo "<tr bgcolor='#FFFFFF' >";
+                        echo "<td><strong>SubTotal</strong></td>";
+                        echo "<td align=right><strong>".number_format($Sbqt,0, ',','.')."</strong></td>";
+                        echo "<td><strong></strong></td>";
+                        echo "<td align=right><strong>".number_format($Sbvl,2, ',','.')."</strong></td>";
+                        echo "<td></td>";
+                        echo "</tr>";                        
+                        $Sbqt=0;
+                        $Sbvl=0;
+                    }                    
+                    if($Pano<>$Ano || $pmes<>$Mes || $pcc<>$CC){
+                        echo "<tr bgcolor='#FFFFFF' >";
+                           echo "<td colspan=5><strong>";
+                           echo "Ano/Mes: ".$Ano."/".str_pad($Mes,2,'0',STR_PAD_LEFT)." - ".$DescCC." (".$CentroCusto."-".$DescCentroCusto.")";
+                           echo "</strong></td>";
+                        echo "</tr>";
+                        $Pano=$Ano;
+                        $pmes=$Mes;
+                        $pcc=$CC;                        
+                    }
+                    if($pmoc<>$Movimento){
+                        echo "<tr bgcolor='#FFFFFF' >";
+                           echo "<td colspan=5><strong>";
+                           echo "Lançamento: ".$Movimento." - ".$DescMovimento;
+                           echo "</strong></td>";
+                        echo "</tr>";
+                        $pmoc=$Movimento;                        
+                    }
+                    $Sbqt+=$Qtd;
+                    $Sbvl+=$VlTotal;
+                    $Tqt+=$Qtd;
+                    $Tvl+=$VlTotal;
+                    
                     ?>
-                    <article<?php if ($presti % 2 == 0) echo ' class="right"'; ?> <?= $status; ?>>
-                        <header>
-                            <hgroup>
-                                <h1>Ano: <?= $Ano; ?> Mes: <?= $Mes; ?> Centro de Custo:<?=$DescCC; ?></h1>
-                            </hgroup>
-                        </header>
-                        <ul class="info post_actions">
-                            <li><a class="act_edit" href="painel.php?exe=prestadores/update&prest=<?= $idConsumo; ?>" title="Editar">Editar</a></li>
-                            <li><a class="act_delete" href="painel.php?exe=prestadores/index&prest=<?= $idConsumo; ?>&action=delete" title="Excluir">Deletar</a></li>
-                        </ul>
-                    </article>
+                    <tr bgcolor=<?= (($almoxi++% 2)==0) ? "#ffffff": "#f2f2f2" ?>>
+                        <td><?=$Item;?>-<?=$DescItem;?></td>
+                        <td align=right><?=number_format($Qtd,0, ',','.')?></td>
+                        <td align=right><?=number_format($VlUni,2, ',','.');?></td>
+                        <td align=right><?=number_format($VlTotal,2, ',','.');?></td>
+                        <td>
+                            <a href="painel.php?exe=auxiliares/updatealmoxarifado&almox=<?= $idConsumo; ?>" title="Editar">
+                                <div class="icon"><div class="pencil"></div></div>
+                            </a>
+                            <a href="painel.php?exe=auxiliares/indexalmoxarifado&delete=<?= $idConsumo; ?>" title="Deletar" class="user_dele">
+                                <div class="icon"><div class="cross"></div></div>
+                            </a>
+                        </td>
+                    </tr>
                     <?php
+                    
                 endforeach;
+                
+                echo "<tr bgcolor='#FFFFFF' >";
+                echo "<td><strong>SubTotal</strong></td>";
+                echo "<td align=right><strong>".number_format($Sbqt,0, ',','.')."</strong></td>";
+                echo "<td><strong></strong></td>";
+                echo "<td align=right><strong>".number_format($Sbvl,2, ',','.')."</strong></td>";
+                echo "<td></td>";
+                echo "</tr>";
+                $almoxi++;
+                
+                echo "<tr bgcolor='#FFFFFF' >";
+                echo "<td><strong>TOTAL</strong></td>";
+                echo "<td align=right><strong>".number_format($Tqt,0, ',','.')."</strong></td>";
+                echo "<td><strong></strong></td>";
+                echo "<td align=right><strong>".number_format($Tvl,2, ',','.')."</strong></td>";
+                echo "<td></td>";
+                echo "</tr>";
+                
+                echo "</table>";
             else:
                 $Pager->ReturnPage();
-                WSErro("Desculpe, ainda não existem prestadores cadastradas!", WS_INFOR);
+                WSErro("Desculpe, ainda não existem Ítens de Consumo Lançado!", WS_INFOR);
             endif;
         endif;
         ?>
@@ -190,7 +300,7 @@
 
 
     <?php
-            $Pager->ExePaginator("prestadores");
+            $Pager->ExePaginator("c_consumo",$Where,$search);
             echo $Pager->getPaginator();    
     ?>
 

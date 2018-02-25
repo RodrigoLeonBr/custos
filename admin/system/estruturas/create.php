@@ -61,9 +61,9 @@ endif;
                             echo '<option disabled="disabled" value="null"> Cadastre antes uma estrutura! </option>';
                         else:
                             foreach ($readEst->getResult() as $est):
-                                echo "<option value=\"{$est['id_estrutura']}\" ";
+                                echo "<option value=\"{$est['estrutura']}\" ";
 
-                                if ($est['id_estrutura'] == $data['estrutura_grupo']):
+                                if ($est['idestrutura'] == $data['estrutura_grupo']):
                                     echo ' selected="selected" ';
                                 endif;
 
