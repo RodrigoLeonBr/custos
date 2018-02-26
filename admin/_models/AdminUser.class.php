@@ -4,7 +4,7 @@
  * AdminUser.class [ MODEL ADMIN ]
  * Respnsável por gerenciar os usuários no Admin do sistema!
  * 
- * @copyright (c) 2014, Robson V. Leite UPINSIDE TECNOLOGIA
+ * @copyright (c) 2018, Rodrigo A. D. Leon Planejamento SMS Americana
  */
 class AdminUser {
 

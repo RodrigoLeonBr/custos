@@ -72,16 +72,22 @@ endif;
                                                 <li><a href="painel.php?exe=unidades/index">Lista/Editar</a></li>
                                             </ul>
                                         </li>
-                                        <li><a href="painel.php?exe=lanccustos/index">Grupos</a>
+                                        <li><a href="painel.php?exe=grupos/index">Grupos</a>
                                             <ul class="submenu-3">
-                                                <li><a href="painel.php?exe=lanccustos/index">Cadastrar</a></li>
-                                                <li><a href="painel.php?exe=lanccustos/index">Lista/Editar</a></li>
+                                                <li><a href="painel.php?exe=grupos/create">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=grupos/index">Lista/Editar</a></li>
                                             </ul>
                                         </li>
-                                        <li><a href="painel.php?exe=lanccustos/index">Sub Grupos</a>
+                                        <li><a href="painel.php?exe=subgrupos/index">Sub Grupos</a>
                                             <ul class="submenu-3">
-                                                <li><a href="painel.php?exe=lanccustos/index">Cadastrar</a></li>
-                                                <li><a href="painel.php?exe=lanccustos/index">Lista/Editar</a></li>
+                                                <li><a href="painel.php?exe=subgrupos/create">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=subgrupos/index">Lista/Editar</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="painel.php?exe=centrocustos/index">Centro de Custo</a>
+                                            <ul class="submenu-3">
+                                                <li><a href="painel.php?exe=centrocustos/create">Cadastrar</a></li>
+                                                <li><a href="painel.php?exe=centrocustos/index">Lista/Editar</a></li>
                                             </ul>
                                         </li>
                                         <li><a href="painel.php?exe=lanccustos/index">Ítens de Laçamento</a>

@@ -10,26 +10,26 @@ endif;
     <article>
 
         <header>
-            <h1>Atualizar Unidade:</h1>
+            <h1>Atualizar Grupo:</h1>
         </header>
 
         <?php
         $data = filter_input_array(INPUT_POST, FILTER_DEFAULT);
-        $unidid = filter_input(INPUT_GET, 'unidid', FILTER_VALIDATE_INT);
+        $grupoid = filter_input(INPUT_GET, 'grupoid', FILTER_VALIDATE_INT);
 
         if (!empty($data['SendPostForm'])):
             unset($data['SendPostForm']);
 
-            require('_models/AdminUnidade.class.php');
-            $cadastra = new AdminUnidade;
-            $cadastra->ExeUpdate($unidid, $data);
+            require('_models/AdminGrupo.class.php');
+            $cadastra = new AdminGrupo;
+            $cadastra->ExeUpdate($grupoid, $data);
 
             WSErro($cadastra->getError()[0], $cadastra->getError()[1]);
         else:
             $read = new Read;
-            $read->ExeRead("c_tabunidade", "WHERE idUnidade = :id", "id={$unidid}");
+            $read->ExeRead("c_tabgrupocc", "WHERE idGrupoCC = :id", "id={$grupoid}");
             if (!$read->getResult()):
-                header('Location: painel.php?exe=unidades/index&empty=true');
+                header('Location: painel.php?exe=grupos/index&empty=true');
             else:
                 $data = $read->getResult()[0];
             endif;
@@ -37,7 +37,7 @@ endif;
         
         $checkCreate = filter_input(INPUT_GET, 'create', FILTER_VALIDATE_BOOLEAN);
         if($checkCreate && empty($cadastra)):
-            WSErro("A Unidade <b>{$data['UnDescricao']}</b> foi cadastrada com sucesso no sistema! Continue atualizando a mesma!", WS_ACCEPT);
+            WSErro("O Grupo <b>{$data['DescGrupoCC']}</b> foi cadastrado com sucesso no sistema! Continue atualizando o mesma!", WS_ACCEPT);
         endif;
         
         ?>
@@ -47,17 +47,22 @@ endif;
 
             <label class="label">
                 <span class="field">Nome:</span>
-                <input type="text" name="UnDescricao" value="<?php if (isset($data)) echo $data['UnDescricao']; ?>" />
+                <input type="text" name="DescGrupoCC" value="<?php if (isset($data)) echo $data['DescGrupoCC']; ?>" />
             </label>
 
             <label class="label">
                 <span class="field">Conteúdo:</span>
-                <textarea name="UnConteudo" rows="5"><?php if (isset($data)) echo $data['UnConteudo']; ?></textarea>
+                <textarea name="GrupoConteudo" rows="5"><?php if (isset($data)) echo $data['GrupoConteudo']; ?></textarea>
             </label>
 
+            <label class="label_small left clear">
+                <span class="field">Ordem de Exibição:</span>
+                <input type="text" name="Ordem" value="<?php if (isset($data)) echo $data['Ordem']; ?>" />
+            </label>
+            <br class="clear">
             <div class="gbform"></div>
 
-            <input type="submit" class="btn blue" value="Atualizar Unidade" name="SendPostForm" />
+            <input type="submit" class="btn blue" value="Atualizar Grupo" name="SendPostForm" />
         </form>
 
     </article>

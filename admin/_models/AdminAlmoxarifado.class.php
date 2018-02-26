@@ -4,7 +4,7 @@
  * AdminEmpresa.class [ MODEL ADMIN ]
  * Responável por gerenciar as empresas no admin do sistema!
  * 
- * @copyright (c) 2014, Robson V. Leite UPINSIDE TECNOLOGIA
+ * @copyright (c) 2018, Rodrigo A. D. Leon Planejamento SMS Americana
  */
 class AdminAlmoxarifado {
 
