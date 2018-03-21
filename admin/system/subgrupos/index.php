@@ -60,8 +60,8 @@
                                     <a target="_blank" href="../centrocusto<?= $CC['DescCentroCusto']; ?>" title="Ver Centro Custo"><?=$CC['idCentroCusto'];?> - <?= $CC['DescCentroCusto']; ?></a>
                                 </hgroup>
                                 <ul class="info post_actions">
-                                    <li><a class="act_edit" href="painel.php?exe=unidades/update&subgrupoid=<?= $CC['idCentroCusto']; ?>" title="Editar">Editar</a></li>
-                                    <li><a class="act_delete" href="painel.php?exe=unidades/index&delete=<?= $CC['idCentroCusto']; ?>" title="Excluir">Deletar</a></li>
+                                    <li><a class="act_edit" href="painel.php?exe=centrocustos/update&ccid=<?= $CC['idCentroCusto']; ?>" title="Editar">Editar</a></li>
+                                    <li><a class="act_delete" href="painel.php?exe=centrocustos/index&delete=<?= $CC['idCentroCusto']; ?>" title="Excluir">Deletar</a></li>
                                 </ul>
                             </article>
                             <?php

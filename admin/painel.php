@@ -110,7 +110,15 @@ endif;
                                 <li><a href="painel.php?exe=auxiliares/indexalmoxarifado">Dispensa do Almoxarifado</a></li>
                                 <li><a href="painel.php?exe=relatorios/relatorio">Outras Despesas</a></li>
                             </ul>
-                        </li>                        
+                        </li>
+                        
+                        <li class="li<?php if (in_array('auxiliares', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Contratos</a>
+                            <ul class="submenu-1">
+                                <li><a href="painel.php?exe=contratos/index">Lista de Contratos</a></li>
+                                <li><a href="painel.php?exe=contratos/create">Cadastra Movimento</a></li>
+                                <li><a href="painel.php?exe=contratos/relatorio">Contratos antigos</a></li>
+                            </ul>
+                        </li>
 
                         <li class="li<?php if (in_array('relatorios', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Relatorios</a>
                             <ul class="submenu-1">

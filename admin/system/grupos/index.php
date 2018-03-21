@@ -21,6 +21,32 @@
 
         $readGrupo = new Read;
         $readGrupo->ExeRead("c_tabgrupocc","ORDER BY Ordem");
+        
+        $exp = filter_input(INPUT_GET, 'exp', FILTER_DEFAULT);        
+        if ($exp):            
+            // Nome do Arquivo do Excel que será gerado
+            
+            $arquivo = 'grupos.csv';
+        
+            $df=fopen("grupos.csv", 'w');
+            fprintf($df, chr(0xEF).chr(0xBB).chr(0xBF));
+            // Criamos uma tabela HTML com o formato da planilha para excel
+            
+            $tabela = array('Id','Nome','Ordem','Conteudo');
+            fputcsv($df,$tabela);
+            
+
+            $resultados = $readGrupo;
+            $resultados->ExeRead("c_tabgrupocc","ORDER BY Ordem");
+
+            foreach ($resultados->getResult() as $result):
+                fputcsv($df,$result);
+            endforeach;
+            fclose($df);                       
+        
+        endif;      
+
+        
         if (!$readGrupo->getResult()):
 
         else:
@@ -60,8 +86,8 @@
                                     <a target="_blank" href="../centrocusto<?= $CC['DescCentroCusto']; ?>" title="Ver Centro Custo"><?=$CC['idCentroCusto'];?> - <?= $CC['DescCentroCusto']; ?></a>
                                 </hgroup>
                                 <ul class="info post_actions">
-                                    <li><a class="act_edit" href="painel.php?exe=unidades/update&grupoid=<?= $CC['idCentroCusto']; ?>" title="Editar">Editar</a></li>
-                                    <li><a class="act_delete" href="painel.php?exe=unidades/index&delete=<?= $CC['idCentroCusto']; ?>" title="Excluir">Deletar</a></li>
+                                    <li><a class="act_edit" href="painel.php?exe=centrocustos/update&ccid=<?= $CC['idCentroCusto']; ?>" title="Editar">Editar</a></li>
+                                    <li><a class="act_delete" href="painel.php?exe=centrocustos/index&delete=<?= $CC['idCentroCusto']; ?>" title="Excluir">Deletar</a></li>
                                 </ul>
                             </article>
                             <?php
@@ -74,7 +100,11 @@
             endforeach;
         endif;
         ?>
-
+        <br>
+        <span><a class="btn green" href="painel.php?exe=grupos/index&exp=true" title="Exporta">Exporta Excel</a></span>
+        
+        <span><a class="btn green" href="grupos.csv" download="grupos.csv" title="Exporta">Baixar arquivo</a></span>
+        
         <div class="clear"></div>
     </section>
 
