@@ -19,9 +19,9 @@
 
             if ($cadastra->getResult()):
 
-                if (!empty($_FILES['gallery_covers']['tmp_name'])):
+                if (!empty($_FILES['gallery_arquivo']['tmp_name'])):
                     $sendGallery = new AdminPost;
-                    $sendGallery->gbSend($_FILES['gallery_covers'], $cadastra->getResult());
+                    $sendGallery->gbSend($_FILES['gallery_arquivo'], $cadastra->getResult());
                 endif;
 
                 header('Location: painel.php?exe=posts/update&create=true&postid=' . $cadastra->getResult());
@@ -119,7 +119,7 @@
             <div class="label gbform">
                 <label class="label">             
                     <span class="field">Enviar Galeria:</span>
-                    <input type="file" multiple name="gallery_covers[]" />
+                    <input type="file" multiple name="gallery_arquivo[]" />
                 </label>             
             </div>
 

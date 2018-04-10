@@ -28,7 +28,12 @@ class AdminContrato {
             $this->Result = false;
             $this->Error = ['<b>Erro ao cadastrar:</b> Para cadastrar um contrato, preencha todos os campos!', WS_ALERT];
         else:
-            $this->setData();            
+            $this->setData();
+            if ($this->Data['importa_arquivo']):
+                $upload = new Upload;
+                $upload->Excel($this->Data['importa_arquivo'], $this->Data['importa_tabela']);
+            endif;
+
             $this->Create();
         endif;
     }
@@ -104,10 +109,10 @@ class AdminContrato {
      * @param STRING $PostStatus = 1 para ativo, 0 para inativo
      */
     public function ExeStatus($CId, $CStatus) {
-        $this->CC = (int) $CId;
+        $this->CId = (int) $CId;
         $this->Data['statusC'] = (string) $CStatus;
         $Update = new Update;
-        $Update->ExeUpdate(self::Entity, $this->Data, "WHERE id_contrato = :id", "id={$this->Cid}");
+        $Update->ExeUpdate(self::Entity, $this->Data, "WHERE id_contrato = :id", "id={$this->CId}");
     }
 
     /*
@@ -119,7 +124,16 @@ class AdminContrato {
     //Valida e cria os dados para realizar o cadastro
     private function setData() {
         $this->Data = array_map('strip_tags', $this->Data);
-        $this->Data = array_map('trim', $this->Data);
+        
+        $source = array('.', ',');
+        $replace = array('', '.');
+        $valor = str_replace($source, $replace, $this->Data['contrato_valor']);
+        $this->Data['contrato_valor']=$valor;
+        $valor = str_replace($source, $replace, $this->Data['contrato_qtd']);
+        $this->Data['contrato_qtd']=$valor;
+        
+        $this->Data['contrato_data'] = Check::Data($this->Data['contrato_data']);        
+        $this->Data['contrato_vencimento'] = Check::Data($this->Data['contrato_vencimento']);        
         $this->Data['contrato_protocolo'] = Check::Name($this->Data['contrato_protocolo']);
     }
 
@@ -159,12 +173,13 @@ class AdminContrato {
     private function Update() {
         $readC = new Read;
         $readC->FullRead("SELECT contrato_valor, contrato_qtd FROM c_contrato WHERE id_contrato = :parent", "parent={$this->CId}");
+        $cont = $readC->getResult();
         if ($readC->getResult()):
-           if ($this->Data["contrato_valor"]<>$readC[0]["contrato_valor"]){
-                $this->Data["contrato_saldovalor"]=$this->Data["contrato_saldovalor"]=$this->Data["contrato_valor"]-$readC[0]["contrato_valor"];
+           if ($this->Data["contrato_valor"]<>$cont[0]["contrato_valor"]){
+                $this->Data["contrato_saldovalor"]=$this->Data["contrato_saldovalor"]=$this->Data["contrato_valor"]-$cont[0]["contrato_valor"];
            }
-           if ($this->Data["contrato_qtd"]<>$readC[0]["contrato_qtd"]){
-                $this->Data["contrato_saldoqtd"]=$this->Data["contrato_saldoqtd"]=$this->Data["contrato_qtd"]-$readC[0]["contrato_qtd"];
+           if ($this->Data["contrato_qtd"]<>$cont[0]["contrato_qtd"]){
+                $this->Data["contrato_saldoqtd"]=$this->Data["contrato_saldoqtd"]=$this->Data["contrato_qtd"]-$cont[0]["contrato_qtd"];
            }
         endif;
         $Update = new Update;
@@ -172,6 +187,89 @@ class AdminContrato {
         if ($Update->getResult()):            
             $this->Result = true;
             $this->Error = ["<b>Sucesso:</b> O contrato da(o) {$this->Data['contrato_prestador']} foi atualizado no sistema!", WS_ACCEPT];
+        endif;
+    }
+
+    /**
+     * <b>Enviar Galeria:</b> Envelope um $_FILES de um input multiple e envie junto a um postID para executar
+     * o upload e o cadastro de galerias do artigo!
+     * @param ARRAY $Files = Envie um $_FILES multiple
+     * @param INT $PostId = Informe o ID do post
+     */
+    public function gbSend(array $Arquivos, $CId) {
+        $this->CId = (int) $CId;
+        $this->Data = $Arquivos;
+
+        $ArquivoName = new Read;
+        $ArquivoName->ExeRead(self::Entity, "WHERE id_contrato = :id", "id={$this->CId}");
+
+        if (!$ArquivoName->getResult()):
+            $this->Error = ["Erro ao enviar galeria. O índice {$this->CId} não foi encontrado no banco!", WS_ERROR];
+            $this->Result = false;
+        else:
+            $ArquivoName = $ArquivoName->getResult()[0]['contrato_protocolo'];
+
+            $gbFiles = array();
+            $gbCount = count($this->Data['tmp_name']);
+            $gbKeys = array_keys($this->Data);
+
+            for ($gb = 0; $gb < $gbCount; $gb++):
+                foreach ($gbKeys as $Keys):
+                    $gbFiles[$gb][$Keys] = $this->Data[$Keys][$gb];
+                endforeach;
+            endfor;
+
+            $gbSend = new Upload;
+            $i = 0;
+            $u = 0;
+
+            foreach ($gbFiles as $gbUpload):
+                $i++;
+                $ImgName = "{$ArquivoName}-gb-{$this->CId}-" . (substr(md5(time() + $i), 0, 5));
+                $gbSend->Contrato($gbUpload, $ImgName, 'contrato');
+
+                if ($gbSend->getResult()):
+                    
+                    $gbImage = $gbSend->getResult();
+                    $gbCreate = ['idcontrato' => $this->CId, "gallery_arquivo" => $gbImage, "gallery_date" => date('Y-m-d H:i:s'), "gallery_name" =>$ArquivoName];
+                    $insertGb = new Create;
+                    $insertGb->ExeCreate("c_contrato_arquivos", $gbCreate);
+                    $u++;
+                endif;
+
+            endforeach;
+
+            if ($u > 1):
+                $this->Error = ["Galeria Atualizada: Foram enviados {$u} arquivos para galeria deste contrato!", WS_ACCEPT];
+                $this->Result = true;
+            endif;
+        endif;
+    }
+
+    /**
+     * <b>Deletar Arquivo da galeria:</b> Informe apenas o id do contrato na galeria para que esse método leia e remova
+     * o arquivo da pasta e delete o registro do banco!
+     * @param INT $GbArquivoId = Id da imagem da galleria
+     */
+    public function gbRemove($GbArquivoId) {
+        $this->CId = (int) $GbArquivoId;
+        $readGb = new Read;
+        $readGb->ExeRead("c_contrato_arquivos", "WHERE gallery_id = :gb", "gb={$this->CId}");
+        if ($readGb->getResult()):
+
+            $Arquivo = '../uploads/' . $readGb->getResult()[0]['gallery_arquivo'];
+
+            if (file_exists($Arquivo) && !is_dir($Arquivo)):
+                unlink($Arquivo);
+            endif;
+
+            $Deleta = new Delete;
+            $Deleta->ExeDelete("c_contrato_arquivos", "WHERE gallery_id = :id", "id={$this->CId}");
+            if ($Deleta->getResult()):
+                $this->Error = ["O Arquivo foi removido com sucesso da galeria!", WS_ACCEPT];
+                $this->Result = true;
+            endif;
+
         endif;
     }
 }

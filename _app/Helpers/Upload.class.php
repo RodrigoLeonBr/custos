@@ -4,7 +4,7 @@
  * Upload.class [ HELPER ]
  * Reponsável por executar upload de imagens, arquivos e mídias no sistema!
  * 
- * @copyright (c) 2014, Robson V. Leite UPINSIDE TECNOLOGIA
+ * @copyright (c) 2018, Rodrigo A Diaz Leon PLANEJAMENTO SECRETARIA DE SAÚE DE AMERICANA
  */
 class Upload {
 
@@ -54,6 +54,37 @@ class Upload {
         $this->UploadImage();
     }
 
+    
+    /**
+     * <b>Enviar Excel:</b> Basta envelopar um $_FILES de um arquivo excel.
+     * @param FILES $Image = Enviar envelope de $_FILES (XLS, XLSX, CVC)
+     * @param STRING $Name = Nome da planilha
+     * @param STRING $Folder = Pasta personalizada
+     */
+    public function Excel(array $Excel, $Name = null, $Folder = null, $MaxFileSize = null) {    
+        $this->File = $Excel;
+        $this->Name = ( (string) $Name ? $Name : substr($File['name'], 0, strrpos($File['name'], '.')) );
+        $this->Folder = ( (string) $Folder ? $Folder : 'excel' );
+        $MaxFileSize = ( (int) $MaxFileSize ? $MaxFileSize : 2 );
+
+        $FileAccept = [
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel'
+        ];
+
+        if ($this->File['size'] > ($MaxFileSize * (1024 * 1024))):
+            $this->Result = false;
+            $this->Error = "Arquivo muito grande, tamanho máximo permitido de {$MaxFileSize}mb";
+        elseif (!in_array($this->File['type'], $FileAccept)):
+            $this->Result = false;
+            $this->Error = 'Tipo de arquivo não suportado. Envie .PDF ou .DOCX!';
+        else:
+            $this->CheckFolder($this->Folder);
+            $this->setFileName();
+            $this->MoveFile();
+        endif;
+    }
+
     /**
      * <b>Enviar Arquivo:</b> Basta envelopar um $_FILES de um arquivo e caso queira um nome e um tamanho personalizado.
      * Caso não informe o tamanho será 2mb!
@@ -70,7 +101,53 @@ class Upload {
 
         $FileAccept = [
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/pdf'
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel'            
+        ];
+
+        if ($this->File['size'] > ($MaxFileSize * (1024 * 1024))):
+            $this->Result = false;
+            $this->Error = "Arquivo muito grande, tamanho máximo permitido de {$MaxFileSize}mb";
+        elseif (!in_array($this->File['type'], $FileAccept)):
+            $this->Result = false;
+            $this->Error = 'Tipo de arquivo não suportado. Envie .PDF ou .DOCX!';
+        else:
+            $this->CheckFolder($this->Folder);
+            $this->setFileName();
+            $this->MoveFile();
+        endif;
+    }
+
+    /**
+     * <b>Enviar Arquivo:</b> Basta envelopar um $_FILES de um arquivo e caso queira um nome e um tamanho personalizado.
+     * Caso não informe o tamanho será 2mb!
+     * @param FILES $File = Enviar envelope de $_FILES (PDF ou DOCX)
+     * @param STRING $Name = Nome do arquivo ( ou do artigo )
+     * @param STRING $Folder = Pasta personalizada
+     * @param STRING $MaxFileSize = Tamanho máximo do arquivo (2mb)
+     */
+    public function Contrato(array $File, $Name = null, $Folder = null, $MaxFileSize = null) {
+        $this->File = $File;
+        $this->Name = ( (string) $Name ? $Name : substr($File['name'], 0, strrpos($File['name'], '.')) );
+        $this->Folder = ( (string) $Folder ? $Folder : 'files' );
+        $MaxFileSize = ( (int) $MaxFileSize ? $MaxFileSize : 2 );
+
+        $FileAccept = [
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/msword',            
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel',
+            'application/x-photoshop',
+            'image/gif',
+            'image/png',
+            'image/jpeg', 
+            'image/bmp',
+            'image/webp',
+            'application/x-rar-compressed',
+            'application/zip',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation'
         ];
 
         if ($this->File['size'] > ($MaxFileSize * (1024 * 1024))):

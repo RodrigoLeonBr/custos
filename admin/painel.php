@@ -107,6 +107,7 @@ endif;
                         <li class="li<?php if (in_array('auxiliares', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Tabelas Auxiliares</a>
                             <ul class="submenu-1">
                                 <li><a href="painel.php?exe=auxiliares/indexfolha">Folha de Pagamento</a></li>
+                                <li><a href="painel.php?exe=auxiliares/impfolha">Importa Folha Pag.</a></li>
                                 <li><a href="painel.php?exe=auxiliares/indexalmoxarifado">Dispensa do Almoxarifado</a></li>
                                 <li><a href="painel.php?exe=relatorios/relatorio">Outras Despesas</a></li>
                             </ul>
@@ -115,8 +116,9 @@ endif;
                         <li class="li<?php if (in_array('auxiliares', $linkto)) echo ' active'; ?>"><a class="opensub" onclick="return false;" href="#">Contratos</a>
                             <ul class="submenu-1">
                                 <li><a href="painel.php?exe=contratos/index">Lista de Contratos</a></li>
-                                <li><a href="painel.php?exe=contratos/create">Cadastra Movimento</a></li>
-                                <li><a href="painel.php?exe=contratos/relatorio">Contratos antigos</a></li>
+                                <li><a href="painel.php?exe=contratos/create">Cadastra Contratos</a></li>
+                                <li><a href="painel.php?exe=contratos/relatorio">Listar Lançamentos</a></li>
+                                <li><a href="painel.php?exe=contratos/relatorio">Cadastrar Lançamentos</a></li>
                             </ul>
                         </li>
 

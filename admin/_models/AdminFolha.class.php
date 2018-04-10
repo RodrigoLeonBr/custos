@@ -2,44 +2,98 @@
 
 /**
  * AdminEmpresa.class [ MODEL ADMIN ]
- * Responável por gerenciar as empresas no admin do sistema!
+ * Responável por gerenciar as importaçãos no admin do sistema!
  * 
  * @copyright (c) 2018, Rodrigo A. D. Leon Planejamento SMS Americana
  */
 class AdminFolha {
 
     private $Data;
-    private $Prestador;
+    private $NomeArquivo;
     private $Error;
     private $Result;
+    private $planilha = null;
+    private $linhas   = null;
+    private $colunas  = null;
 
     //Nome da tabela no banco de dados
-    const Entity = 'prestadores';
+    const Entity = 'c_importa_arquivos';
 
     /**
      * <b>Cadastrar o Prestador:</b> Envelope os dados do prestador em um array atribuitivo e execute esse método
      * para cadastrar a mesma no banco.
      * @param ARRAY $Data = Atribuitivo
      */
-    public function ExeCreate(array $Data) {
+    public function ExeCreate(array $Data) {        
+        require_once('_models/simplexlsx.class.php');
+        
         $this->Data = $Data;
         if (in_array('', $this->Data)):
             $this->Error = ["Erro ao Cadastrar: Para cadastrar um prestador, preencha todos os campos!", WS_ALERT];
             $this->Result = false;
         else:
-            $this->setData();            
-            $this->Create();
+            $this->setData();
+            if ($this->Data['importa_arquivo']):
+                $upload = new Upload;
+                $upload->Excel($this->Data['importa_arquivo'], $this->Data['importa_tabela']);
+            endif;
+            
+            if (isset($upload) && $upload->getResult()):
+                $this->Data['importa_arquivo'] = $upload->getResult();
+                $this->Create();                
+            else:
+                $this->Data['importa_arquivo'] = null;
+                $this->Create();
+            endif;
         endif;
     }
+    
+    	/*
+	 * <b>Importa Planilha para Folha de Pagamento:</b> Lê planilha importada 
+         * testa as linhas e atualiza os custos
+	 * @param $path - Caminho e nome da planilha do Excel xlsx
+	 * @param $conexao - Instância da conexão PDO
+	 */
+	public function importaplanilha($path=null){
+
+            if ( $xlsx = SimpleXLSX::parse($path) ) {
+                $this->Error =  '<table>';
+                foreach( $xlsx->rows() as $r ) {
+                    $this->Error .=  '<tr><td>'.implode('</td><td>', $r ).'</td></tr>';
+                }                
+                $this->Error .= '</table>';
+                $this->Result = TRUE;
+            } else {
+                $this->Error = ["Erro ao Importar provavel caminho errado ".$path, WS_ALERT];
+                $this->Result = FALSE;
+            }            
+	}
+        
+	/*
+	 * Método que retorna o valor do atributo $linhas
+	 * @return Valor inteiro contendo a quantidade de linhas na planilha
+	 */
+	public function getQtdeLinhas(){
+		return $this->linhas;
+	}
+
+	/*
+	 * Método que retorna o valor do atributo $colunas
+	 * @return Valor inteiro contendo a quantidade de colunas na planilha
+	 */
+	public function getQtdeColunas(){
+		return $this->colunas;
+	}
+
 
     /**
      * <b>Atualizar o Prestador:</b> Envelope os dados em uma array atribuitivo e informe o id de um prestador
      * para atualiza-la no banco de dados!
-     * @param INT $PrestadorId = Id do Prestador
+     * @param INT $NomeArquivo = Id do Prestador
      * @param ARRAY $Data = Atribuitivo
      */
-    public function ExeUpdate($PrestadorId, array $Data) {
-        $this->Prestador = (int) $PrestadorId;
+    public function ExeUpdate($NomeArquivo, array $Data) {
+        $this->Prestador = (int) $NomeArquivo;
         $this->Data = $Data;
         if (in_array('', $this->Data)):
             $this->Error = ["Erro ao Atualizar: Para atualizar <b>{$this->Data['prestador_nome']}</b>, preencha todos os campos!", WS_ALERT];
@@ -54,10 +108,10 @@ class AdminFolha {
     /**
      * <b>Deleta Prestadores:</b> Informe o ID do prestador a ser removida para que esse método realize uma
      * checagem excluinto todos os dados nessesários e removendo o prestador do banco!
-     * @param INT $PrestadorId = Id do prestador
+     * @param INT $NomeArquivo = Id do prestador
      */
-    public function ExeDelete($PrestadorId) {
-        $this->Prestador = (int) $PrestadorId;
+    public function ExeDelete($NomeArquivo) {
+        $this->Prestador = (int) $NomeArquivo;
 
         $ReadPrest = new Read;
         $ReadPrest->ExeRead(self::Entity, "WHERE prestador_id = :prest", "prest={$this->Prestador}");
@@ -84,9 +138,9 @@ class AdminFolha {
      * @param INT $PostId = Id do post
      * @param STRING $PostStatus = 1 para ativo, 0 para inativo
      */
-    public function ExeStatus($PrestadorId, $PrestadorStatus) {
-        $this->Prestador = (int) $PrestadorId;
-        $this->Data['prestador_status'] = (string) $PrestadorStatus;
+    public function ExeStatus($NomeArquivo, $FolhaStatus) {
+        $this->Prestador = (int) $NomeArquivo;
+        $this->Data['prestador_status'] = (string) $FolhaStatus;
         $Update = new Update;
         $Update->ExeUpdate(self::Entity, $this->Data, "WHERE prestador_id = :id", "id={$this->Prestador}");
     }
@@ -116,10 +170,10 @@ class AdminFolha {
 
     //Valida e cria os dados para realizar o cadastro. Realiza Upload da Capa!
     private function setData() {
-        $this->Data['prestador_nome'] = Check::Name($this->Data['prestador_nome']);
+        $this->Data['importa_tabela'] = Check::Name($this->Data['importa_tabela']);
     }
 
-    //Verifica o NAME da empresa. Se existir adiciona um pós-fix +1
+    //Verifica o NAME da importação. Se existir adiciona um pós-fix +1
     private function setName() {
         $Where = ( isset($this->Prestador) ? "prestador_id != {$this->Prestador} AND" : '');
 
@@ -130,7 +184,7 @@ class AdminFolha {
         endif;
     }
 
-    //Verifica e envia a capa da empresa para a pasta!
+    //Verifica e envia a capa da importação para a pasta!
     private function sendCapa() {
         if (!empty($this->Data['prestador_capa']['tmp_name'])):
             list($w, $h) = getimagesize($this->Data['prestador_capa']['tmp_name']);
@@ -173,7 +227,7 @@ class AdminFolha {
         $Create->ExeCreate(self::Entity, $this->Data);
         if ($Create->getResult()):
             $this->Result = $Create->getResult();
-            $this->Error = ["O Prestador <b>{$this->Data['prestador_nome']}</b> foi cadastrada com sucesso no sistema!", WS_ACCEPT];
+            $this->Error = ["A importação de <b>{$this->Data['importa_tabela']}</b> foi cadastrada com sucesso no sistema!", WS_ACCEPT];
         endif;
     }
 
@@ -187,4 +241,85 @@ class AdminFolha {
         endif;
     }
 
+    /**
+     * <b>Enviar Galeria:</b> Envelope um $_FILES de um input multiple e envie junto a um postID para executar
+     * o upload e o cadastro de galerias do artigo!
+     * @param ARRAY $Files = Envie um $_FILES multiple
+     * @param INT $PostId = Informe o ID do post
+     */
+    public function gbSend(array $Excel, $NomeArquivo, $NomeTabela) {
+        $this->FolhaId = (int) $NomeArquivo;
+        $this->Data = $Excel;
+
+        $ExcelName = new Read;
+        $ExcelName->ExeRead(c_importa_arquivos, "WHERE importa_name = :name", "name={$NomeArquivo}");
+
+        if ($ExcelName->getResult()):
+            $this->Error = ["Erro ao enviar excel. O índice {$this->FolhaId} já foi importado no banco!", WS_ERROR];
+            $this->Result = false;
+        else:
+            
+            $gbFiles = array();
+            $gbCount = count($this->Data['tmp_name']);
+            $gbKeys = array_keys($this->Data);
+
+            for ($gb = 0; $gb < $gbCount; $gb++):
+                foreach ($gbKeys as $Keys):
+                    $gbFiles[$gb][$Keys] = $this->Data[$Keys][$gb];
+                endforeach;
+            endfor;
+
+            $gbSend = new Upload;
+            $i = 0;
+            $u = 0;
+
+            foreach ($gbFiles as $gbUpload):
+                $i++;
+                $ExName = "{$ExcelName}-gb-" . (substr(md5(time() + $i), 0, 5));
+                $gbSend->Excel($gbUpload, $ExName);
+
+                if ($gbSend->getResult()):
+                    $gbArquivo = $gbSend->getResult();
+                    $gbCreate = ['importa_tabela' => $NomeTabela, "importa_arquivo" => $gbArquivo, "importa_date" => date('Y-m-d H:i:s'), "importa_name" => $NomeArquivo];
+                    $insertGb = new Create;
+                    $insertGb->ExeCreate("c_importa_arquivos", $gbCreate);
+                    $u++;
+                endif;
+
+            endforeach;
+
+            if ($u > 1):
+                $this->Error = ["Arquivos Atualizados: Foram enviadas {$u} arquivos de excel para galeria!", WS_ACCEPT];
+                $this->Result = true;
+            endif;
+        endif;
+    }
+
+    /**
+     * <b>Deletar Imagem da galeria:</b> Informe apenas o id da imagem na galeria para que esse método leia e remova
+     * a imagem da pasta e delete o registro do banco!
+     * @param INT $GbImageId = Id da imagem da galleria
+     */
+    public function gbRemove($GbImageId) {
+        $this->FolhaId = (int) $GbImageId;
+        $readGb = new Read;
+        $readGb->ExeRead("ws_posts_gallery", "WHERE gallery_id = :gb", "gb={$this->FolhaId}");
+        if ($readGb->getResult()):
+
+            $Imagem = '../uploads/' . $readGb->getResult()[0]['gallery_image'];
+
+            if (file_exists($Imagem) && !is_dir($Imagem)):
+                unlink($Imagem);
+            endif;
+
+            $Deleta = new Delete;
+            $Deleta->ExeDelete("ws_posts_gallery", "WHERE gallery_id = :id", "id={$this->FolhaId}");
+            if ($Deleta->getResult()):
+                $this->Error = ["A imagem foi removida com sucesso da galeria!", WS_ACCEPT];
+                $this->Result = true;
+            endif;
+
+        endif;
+    }
+    
 }

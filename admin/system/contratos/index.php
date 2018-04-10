@@ -58,6 +58,11 @@
 
                     <h4><strong><?=$contrato_protocolo;?>-<?= Check::Words($contrato_prestador, 20) ?></strong></h4>
                     <h4><strong>CNES: </strong><?=$contrato_cnes; ?><strong> Dt Venc: </strong><?= date('d/m/Y', strtotime($contrato_vencimento)); ?></h4>
+                    <?php
+                        if(!is_null($contrato_obs)){
+                            echo "<h5><strong>Obs.: </strong>".$contrato_obs."</h5>";
+                        }
+                    ?>                    
                     <h4><strong>Valor Saldo:</strong> <?=number_format($contrato_saldovalor,2, ',','.'); ?><strong> Qtd Saldo: </strong><?=number_format($contrato_saldoqtd,0, ',','.');?></h4>
                     
                     <ul class="info post_actions">
